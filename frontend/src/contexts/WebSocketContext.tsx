@@ -1,7 +1,9 @@
+import { useAuth } from '@hooks';
 import { WebSocketState, WSMessage } from '@types';
 import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
-const url = `ws://${import.meta.env.API_URL}/ws/v1`;
+declare const API_URL: string;
+const url = `ws://${API_URL}/ws/v1/endpoint`;
 
 interface WebSocketContextContract {
   state: WebSocketState;
@@ -21,14 +23,15 @@ export const WebSocketContext = createContext<WebSocketContextContract>({
 });
 
 export const WebSocketProvider = ({ children }: Props): React.ReactNode => {
+  const { token } = useAuth();
   const websocket = useRef<WebSocket>(null);
   const [state, setState] = useState<WebSocketState>('loading');
 
   const initialize = useCallback(() => {
-    if (websocket.current) return;
+    if (websocket.current || !token) return;
 
     setState('loading');
-    websocket.current = new WebSocket(url);
+    websocket.current = new WebSocket(`${url}?token=${token}`);
     websocket.current.addEventListener('open', () => setState('ready'));
     websocket.current.addEventListener('close', () => setState(prev => prev === 'error' ? prev : 'closed'));
 
@@ -40,7 +43,7 @@ export const WebSocketProvider = ({ children }: Props): React.ReactNode => {
       console.error('WebSocket error:', error);
       setState('error');
     });
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     initialize();

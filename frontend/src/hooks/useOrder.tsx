@@ -13,7 +13,7 @@ interface ListOrderContext<T> {
   sorter: (a: T, b: T) => number;
 }
 
-export function useOrder<T> (
+export function useOrder<T>(
   defaultOrderBy: keyof T,
   syncNavigation = false,
   defaultOrder?: TableOrder

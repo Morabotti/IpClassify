@@ -44,11 +44,13 @@ export default [
     rules: {
       ...pluginHooks.configs.recommended.rules,
       'react/prop-types': 0,
+      'react/no-children-prop': 0,
       'react-compiler/react-compiler': 'error',
       '@typescript-eslint/no-unused-vars': ['warn', {
         vars: 'all',
         args: 'after-used',
-        argsIgnorePattern: '^_|'
+        argsIgnorePattern: '^_|',
+        caughtErrors: 'none'
       }]
     }
   },

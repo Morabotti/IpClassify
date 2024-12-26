@@ -1,6 +1,7 @@
 package fi.morabotti.ipclassify.service;
 
 import fi.morabotti.ipclassify.config.options.AuthOptions;
+import fi.morabotti.ipclassify.config.options.SecurityOptions;
 import fi.morabotti.ipclassify.dto.auth.AuthResponse;
 import fi.morabotti.ipclassify.dto.auth.AuthUser;
 import fi.morabotti.ipclassify.dto.auth.LoginRequest;
@@ -8,7 +9,6 @@ import fi.morabotti.ipclassify.security.ApplicationUser;
 import fi.morabotti.ipclassify.security.JwtAuthenticationFilter;
 import fi.morabotti.ipclassify.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final AuthOptions authOptions;
+    private final SecurityOptions options;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
@@ -46,6 +47,7 @@ public class AuthenticationService {
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in")))
                 .map(user -> AuthResponse.builder()
                         .user(AuthUser.from(user))
+                        .maxAge(options.getAccessExpiration())
                         .token(jwtTokenProvider.generateToken(user))
                         .build());
     }
@@ -58,6 +60,7 @@ public class AuthenticationService {
 
         return AuthResponse.builder()
                 .token(jwtTokenProvider.generateToken(user))
+                .maxAge(options.getAccessExpiration())
                 .user(AuthUser.from(user))
                 .build();
     }

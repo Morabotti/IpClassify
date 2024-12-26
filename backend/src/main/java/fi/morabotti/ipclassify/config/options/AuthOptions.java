@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Data
 public class AuthOptions {
+    public static final String QUERY_PARAM_NAME = "token";
+
     @Value("${auth.username}")
     private String username;
 

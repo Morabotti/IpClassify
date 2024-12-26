@@ -30,7 +30,7 @@ export const useControls = ({
     defaultPage,
     defaultPageKey,
     defaultRows,
-    defaultRowsKey,
+    defaultRowsKey
   });
 
   const [memoryQuery, setMemoryQuery] = useState<PaginationMemory>({ page: defaultPage, rows: defaultRows });
@@ -92,7 +92,7 @@ export const useControls = ({
     else {
       updatePath(rows, defaultPage);
     }
-    
+
     cb();
   }, [memory, updatePath, defaultPage, rows]);
 

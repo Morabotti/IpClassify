@@ -7,5 +7,6 @@ import lombok.Data;
 @Builder
 public class AuthResponse {
     private String token;
+    private Long maxAge;
     private AuthUser user;
 }

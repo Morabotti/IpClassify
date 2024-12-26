@@ -30,7 +30,7 @@ public class JwtTokenProvider {
                 .setSubject(user.getUsername())
                 .setId(user.getId().toString())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + options.getAccessExpiration()))
+                .setExpiration(new Date(System.currentTimeMillis() + options.getAccessExpiration() * 1000))
                 .addClaims(Map.of(
                         "id", user.getId(),
                         "username", user.getUsername()

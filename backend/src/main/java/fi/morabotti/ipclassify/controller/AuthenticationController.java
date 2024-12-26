@@ -3,7 +3,9 @@ package fi.morabotti.ipclassify.controller;
 import fi.morabotti.ipclassify.dto.auth.AuthResponse;
 import fi.morabotti.ipclassify.dto.auth.LoginRequest;
 import fi.morabotti.ipclassify.service.AuthenticationService;
+
 import jakarta.validation.Valid;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,16 +19,15 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/auth")
 public class AuthenticationController {
-
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public Mono<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
+    public Mono<AuthResponse> login(@Valid @RequestBody LoginRequest request, ServerHttpResponse response) {
         return authenticationService.authenticate(request);
     }
 
     @GetMapping("/me")
-    public Mono<AuthResponse> getMe(ServerWebExchange exchange) {
+    public Mono<AuthResponse> getMe(ServerWebExchange exchange, ServerHttpResponse response) {
         return authenticationService.extendSession(exchange);
     }
 }

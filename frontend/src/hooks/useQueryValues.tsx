@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 
-export function useQueryValues<T> (defaultValues: T): T {
+export function useQueryValues<T>(defaultValues: T): T {
   const { search } = useLocation();
 
   const values: T = useMemo(() => {

@@ -26,7 +26,7 @@ public class WebSocketRouteConfig {
 
     @Bean
     public HandlerMapping webSocketHandlerMapping(MyWebSocketHandler myWebSocketHandler) {
-        Map<String, Object> urlMap = Map.of("/ws/v1/echo", authWebSocketHandler(myWebSocketHandler));
+        Map<String, Object> urlMap = Map.of("/ws/v1/endpoint", authWebSocketHandler(myWebSocketHandler));
         SimpleUrlHandlerMapping mapping = new SimpleUrlHandlerMapping();
         mapping.setUrlMap(urlMap);
         mapping.setOrder(-1);
@@ -41,7 +41,7 @@ public class WebSocketRouteConfig {
 
     private WebHandler authWebSocketHandler(MyWebSocketHandler webSocketHandler) {
         return (exchange) -> {
-            Optional<String> token = jwtAuthenticationFilter.extractToken(exchange.getRequest().getHeaders());
+            Optional<String> token = jwtAuthenticationFilter.extractTokenQuery(exchange.getRequest().getQueryParams());
 
             if (token.isEmpty() || !jwtTokenProvider.validateToken(token.get())) {
                 exchange.getResponse().setRawStatusCode(401);

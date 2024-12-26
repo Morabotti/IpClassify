@@ -2,7 +2,8 @@ import { useEffect, useCallback, useMemo } from 'react';
 import { AuthUser } from '@types';
 import { useAuth } from '@hooks';
 import { useLocation } from 'react-router-dom';
-import { QueryParams } from '@enums';
+import { LocalStorageKey, QueryParams } from '@enums';
+import { authApi } from '@client';
 
 interface AuthContext {
   loading: boolean;
@@ -11,7 +12,7 @@ interface AuthContext {
 }
 
 export const useAuthLayer = (): AuthContext => {
-  const { loading, auth, setAuth } = useAuth();
+  const { loading, auth, setAuth, revokeAuth, stopLoading } = useAuth();
   const { pathname, search } = useLocation();
 
   const queries = useMemo(() => {
@@ -30,15 +31,12 @@ export const useAuthLayer = (): AuthContext => {
   }, [search, pathname]);
 
   const getStatus = useCallback(async () => {
-    // const token = localStorage.getItem(LocalStorageKey.Token);
+    const token = localStorage.getItem(LocalStorageKey.Token);
 
     if (auth === null && loading) {
-      setAuth('test', { name: 'test' });
-
-      /*
       if (token) {
         try {
-          const response = await getMe(token);
+          const response = await authApi.getMe(token);
           setAuth(response.token, response.user);
         }
         catch (e) {
@@ -49,9 +47,8 @@ export const useAuthLayer = (): AuthContext => {
       else {
         stopLoading();
       }
-      */
     }
-  }, [loading, auth, setAuth]);
+  }, [loading, auth, setAuth, revokeAuth, stopLoading]);
 
   useEffect(() => {
     getStatus();

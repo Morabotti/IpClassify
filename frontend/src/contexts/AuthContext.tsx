@@ -6,6 +6,7 @@ import { clearAuthToken, setAuthToken } from '@client';
 interface AuthContext {
   loading: boolean;
   auth: null | AuthUser;
+  token: null | string;
   setAuth: (token: string, user: AuthUser) => void;
   revokeAuth: () => void;
   stopLoading: () => void;
@@ -19,6 +20,7 @@ interface Props {
 export const AuthContext = createContext<AuthContext>({
   loading: true,
   auth: null,
+  token: null,
   setAuth: () => {},
   revokeAuth: () => {},
   stopLoading: () => {}
@@ -26,10 +28,12 @@ export const AuthContext = createContext<AuthContext>({
 
 export const AuthProvider = ({ children }: Props): ReactNode => {
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState<null | string>(null);
   const [auth, setStateAuth] = useState<null | AuthUser>(null);
 
   const setAuth = (token: string, user: AuthUser) => {
     localStorage.setItem(LocalStorageKey.Token, token);
+    setToken(token);
     setAuthToken(token);
     setStateAuth(user);
     setLoading(false);
@@ -39,6 +43,7 @@ export const AuthProvider = ({ children }: Props): ReactNode => {
     clearAuthToken();
     localStorage.removeItem(LocalStorageKey.Token);
     setStateAuth(null);
+    setToken(null);
     setLoading(false);
   };
 
@@ -51,6 +56,7 @@ export const AuthProvider = ({ children }: Props): ReactNode => {
       value={{
         loading,
         auth,
+        token,
         setAuth,
         revokeAuth,
         stopLoading

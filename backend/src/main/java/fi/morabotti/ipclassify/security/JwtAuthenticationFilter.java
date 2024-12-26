@@ -1,11 +1,14 @@
 package fi.morabotti.ipclassify.security;
 
+import fi.morabotti.ipclassify.config.options.AuthOptions;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -29,6 +32,10 @@ public class JwtAuthenticationFilter implements ServerSecurityContextRepository 
         return Optional.ofNullable(headers.getFirst(HttpHeaders.AUTHORIZATION))
                 .filter(authHeader -> authHeader.startsWith(BEARER_PREFIX))
                 .map(authHeader -> authHeader.substring(BEARER_PREFIX.length()));
+    }
+
+    public Optional<String> extractTokenQuery(MultiValueMap<String, String> queryParams) {
+        return Optional.ofNullable(queryParams.getFirst(AuthOptions.QUERY_PARAM_NAME));
     }
 
     @Override

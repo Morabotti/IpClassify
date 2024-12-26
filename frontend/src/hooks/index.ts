@@ -8,4 +8,5 @@ export * from './useControls';
 export * from './useAuthLayer';
 export * from './useSimpleContextMenu';
 export * from './useOrder';
+export * from './useLogin';
 export * from './useDebounce';
