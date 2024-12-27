@@ -5,8 +5,6 @@ import fi.morabotti.ipclassify.dto.auth.LoginRequest;
 import fi.morabotti.ipclassify.service.AuthenticationService;
 
 import jakarta.validation.Valid;
-import org.springframework.http.server.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

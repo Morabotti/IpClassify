@@ -8,6 +8,11 @@ import org.springframework.stereotype.Component;
 @Data
 public class KafkaOptions {
     public static final String EXAMPLE_TOPIC = "example-topic";
+    public static final String REQUEST_MESSAGE_TOPIC = "request-message-topic";
+    public static final String ACCESS_REQUEST_MESSAGE_TOPIC = "access-request-message-topic";
+
+    public static final String PRIMARY_GROUP = "primary";
+    public static final String ANALYSIS_GROUP = "analysis";
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootStrapServers;

@@ -2,7 +2,8 @@ package fi.morabotti.ipclassify.config;
 
 import fi.morabotti.ipclassify.AppDefault;
 import fi.morabotti.ipclassify.config.options.KafkaOptions;
-import fi.morabotti.ipclassify.domain.MyMessage;
+import fi.morabotti.ipclassify.domain.AccessRequestMessage;
+import fi.morabotti.ipclassify.domain.RequestMessage;
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -26,26 +27,40 @@ public class KafkaConfig {
     private final KafkaOptions options;
 
     @Bean
-    public KafkaSender<String, MyMessage> myMessageSender() {
+    public KafkaSender<String, RequestMessage> requestMessageSender() {
+        return createSenderOptions();
+    }
+
+    @Bean
+    public ReceiverOptions<String, RequestMessage> requestMessagePrimaryReceiverOptions() {
+        return createReceiverOptions(KafkaOptions.PRIMARY_GROUP, RequestMessage.class);
+    }
+
+    @Bean
+    public KafkaSender<String, AccessRequestMessage> accessRequestMessageSender() {
+        return createSenderOptions();
+    }
+
+    @Primary
+    @Bean
+    public ReceiverOptions<String, AccessRequestMessage> accessRequestMessagePrimaryReceiverOptions() {
+        return createReceiverOptions(KafkaOptions.PRIMARY_GROUP, AccessRequestMessage.class);
+    }
+
+    @Bean("accessRequestMessageAnalysisReceiverOptions")
+    public ReceiverOptions<String, AccessRequestMessage> accessRequestMessageAnalysisReceiverOptions() {
+        return createReceiverOptions(KafkaOptions.ANALYSIS_GROUP, AccessRequestMessage.class);
+    }
+
+    private <T> KafkaSender<String, T> createSenderOptions() {
         Map<String, Object> producerProps = new HashMap<>();
         producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, options.getBootStrapServers());
         producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         producerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         producerProps.put(ProducerConfig.ACKS_CONFIG, "all");
 
-        SenderOptions<String, MyMessage> senderOptions = SenderOptions.create(producerProps);
+        SenderOptions<String, T> senderOptions = SenderOptions.create(producerProps);
         return KafkaSender.create(senderOptions);
-    }
-
-    @Primary
-    @Bean
-    public ReceiverOptions<String, MyMessage> myMessagePrimaryReceiverOptions() {
-        return createReceiverOptions("primary-group", MyMessage.class);
-    }
-
-    @Bean("myMessageSecondaryReceiverOptions")
-    public ReceiverOptions<String, MyMessage> myMessageSecondaryReceiverOptions() {
-        return createReceiverOptions("secondary-group", MyMessage.class);
     }
 
     private <T> ReceiverOptions<String, T> createReceiverOptions(String groupId, Class<T> clazz) {

@@ -1,6 +1,6 @@
 package fi.morabotti.ipclassify.dto.common;
 
-import jakarta.annotation.Nullable;
+import reactor.util.annotation.Nullable;
 
 public class WebSocketMessage<T> {
     public enum MessageType {

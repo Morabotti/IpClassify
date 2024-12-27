@@ -1,8 +1,6 @@
 package fi.morabotti.ipclassify.websocket;
 
-import fi.morabotti.ipclassify.config.options.KafkaOptions;
 import fi.morabotti.ipclassify.security.ApplicationUser;
-import fi.morabotti.ipclassify.service.KafkaConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,7 +11,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -24,8 +21,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class MyWebSocketHandler implements WebSocketHandler {
     private final Set<WebSocketSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
-    private final KafkaConsumer kafkaConsumer;
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
@@ -46,12 +41,15 @@ public class MyWebSocketHandler implements WebSocketHandler {
                     return Mono.empty();
                 });
 
+        Flux<WebSocketMessage> kafkaMessageCounter = Flux.empty();
+        /*
         Flux<WebSocketMessage> kafkaMessageCounter = kafkaConsumer.countMessagesInIntervals(KafkaOptions.EXAMPLE_TOPIC, Duration.ofSeconds(10))
                 .map(count -> session.textMessage(String.format("Messages in the last 10 seconds: %d", count)))
                 .onErrorResume(error -> {
                     log.error("Error in Kafka message counter stream: {}", error.getMessage(), error);
                     return Mono.empty();
                 });
+        */
 
         return session.send(
                 Flux.merge(

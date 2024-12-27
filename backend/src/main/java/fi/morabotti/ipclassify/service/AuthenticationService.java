@@ -10,6 +10,7 @@ import fi.morabotti.ipclassify.security.JwtAuthenticationFilter;
 import fi.morabotti.ipclassify.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,8 +35,8 @@ public class AuthenticationService {
                 .map(this::generateResponse);
     }
 
-    public Mono<ApplicationUser> getMe(ServerWebExchange exchange) {
-        return Mono.justOrEmpty(jwtAuthenticationFilter.extractToken(exchange.getRequest().getHeaders()))
+    public Mono<ApplicationUser> getMe(ServerHttpRequest request) {
+        return Mono.justOrEmpty(jwtAuthenticationFilter.extractToken(request.getHeaders()))
                 .map(jwtTokenProvider::getAuthentication)
                 .map(Authentication::getPrincipal)
                 .filter(ApplicationUser.class::isInstance)
@@ -43,7 +44,7 @@ public class AuthenticationService {
     }
 
     public Mono<AuthResponse> extendSession(ServerWebExchange exchange) {
-        return this.getMe(exchange)
+        return this.getMe(exchange.getRequest())
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in")))
                 .map(user -> AuthResponse.builder()
                         .user(AuthUser.from(user))

@@ -26,6 +26,9 @@ public class AccessRecord {
     private String ip;
 
     @Field(type = FieldType.Match_Only_Text)
+    private String requestId;
+
+    @Field(type = FieldType.Match_Only_Text)
     private String userId;
 
     @Field(type = FieldType.Text)
@@ -37,6 +40,45 @@ public class AccessRecord {
     @Field(type = FieldType.Text)
     private String acceptLanguage;
 
+    @Field(type = FieldType.Text)
+    private String continent;
+
+    @Field(type = FieldType.Text)
+    private String country;
+
+    @Field(type = FieldType.Text)
+    private String region;
+
+    @Field(type = FieldType.Text)
+    private String city;
+
+    @Field(type = FieldType.Match_Only_Text)
+    private String zip;
+
+    @Field(type = FieldType.Double)
+    private Double latitude;
+
+    @Field(type = FieldType.Double)
+    private Double longitude;
+
+    @Field(type = FieldType.Match_Only_Text)
+    private String timezone;
+
+    @Field(type = FieldType.Text)
+    private String isp;
+
+    @Field(type = FieldType.Text)
+    private String org;
+
+    @Field(type = FieldType.Boolean)
+    private Boolean isMobile;
+
+    @Field(type = FieldType.Boolean)
+    private Boolean isProxy;
+
+    @Field(type = FieldType.Boolean)
+    private Boolean isHosting;
+
     @Field(type = FieldType.Boolean)
     private Boolean danger;
 
@@ -45,6 +87,9 @@ public class AccessRecord {
 
     @Field(type = FieldType.Date)
     private Instant createdAt;
+
+    @Field(type = FieldType.Date)
+    private Instant processedAt;
 
     @Field(type = FieldType.Date)
     private Instant uploadedAt;
