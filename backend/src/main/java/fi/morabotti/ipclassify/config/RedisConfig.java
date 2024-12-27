@@ -1,7 +1,11 @@
 package fi.morabotti.ipclassify.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import fi.morabotti.ipclassify.config.options.RedisOptions;
 import fi.morabotti.ipclassify.domain.IpClassification;
+import fi.morabotti.ipclassify.domain.LocationRecord;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -32,12 +36,24 @@ public class RedisConfig {
         return buildTemplate(factory, IpClassification.class);
     }
 
+    @Bean
+    public ReactiveRedisTemplate<String, LocationRecord> reactiveLocationRecordTemplate(
+            @Qualifier("reactiveRedisConnectionFactory") ReactiveRedisConnectionFactory factory
+    ) {
+        return buildTemplate(factory, LocationRecord.class);
+    }
+
     private <TKey, TValue> ReactiveRedisTemplate<TKey, TValue> buildTemplate(
             ReactiveRedisConnectionFactory factory,
             Class<TValue> valueClass
     ) {
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
         StringRedisSerializer keySerializer = new StringRedisSerializer();
         Jackson2JsonRedisSerializer<TValue> valueSerializer = new Jackson2JsonRedisSerializer<>(valueClass);
+        valueSerializer.setObjectMapper(objectMapper);
 
         RedisSerializationContext.RedisSerializationContextBuilder<TKey, TValue> builder = RedisSerializationContext
                 .newSerializationContext(keySerializer);

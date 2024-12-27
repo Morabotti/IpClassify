@@ -5,6 +5,7 @@ import fi.morabotti.ipclassify.dto.auth.LoginRequest;
 import fi.morabotti.ipclassify.service.AuthenticationService;
 
 import jakarta.validation.Valid;
+import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,12 +23,12 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
-    public Mono<AuthResponse> login(@Valid @RequestBody LoginRequest request, ServerHttpResponse response) {
+    public Mono<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return authenticationService.authenticate(request);
     }
 
     @GetMapping("/me")
-    public Mono<AuthResponse> getMe(ServerWebExchange exchange, ServerHttpResponse response) {
+    public Mono<AuthResponse> getMe(ServerWebExchange exchange) {
         return authenticationService.extendSession(exchange);
     }
 }

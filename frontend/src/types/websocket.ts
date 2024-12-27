@@ -1,7 +1,7 @@
 export type WebSocketState = 'closed' | 'loading' | 'error' | 'ready';
 
 export enum WSMessageType {
-  Test = 'test'
+  Test = 'TEST'
 }
 
 export interface WSMessage<T> {
