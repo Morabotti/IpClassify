@@ -10,9 +10,11 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveValueOperations;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -48,6 +50,11 @@ public class IpLocationService {
                     log.error("Error fetching location record for IP: {}", ip, e);
                     return Mono.error(new RuntimeException("Could not fetch IP location", e));
                 });
+    }
+
+    public Flux<LocationRecord> getLocationRecords(Set<String> ips) {
+        return Flux.fromIterable(ips)
+                .flatMap(this::getLocationRecord);
     }
 
     public Mono<LocationRecord> fetchNewLocationRecord(String ip) {

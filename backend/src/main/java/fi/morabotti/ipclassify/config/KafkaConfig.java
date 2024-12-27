@@ -47,7 +47,7 @@ public class KafkaConfig {
         return createReceiverOptions(KafkaOptions.PRIMARY_GROUP, AccessRequestMessage.class);
     }
 
-    @Bean("accessRequestMessageAnalysisReceiverOptions")
+    @Bean("analysisReceiverOptions")
     public ReceiverOptions<String, AccessRequestMessage> accessRequestMessageAnalysisReceiverOptions() {
         return createReceiverOptions(KafkaOptions.ANALYSIS_GROUP, AccessRequestMessage.class);
     }

@@ -20,6 +20,9 @@ public class AccessRecord {
     private String application;
 
     @Field(type = FieldType.Text)
+    private String path;
+
+    @Field(type = FieldType.Text)
     private String method;
 
     @Field(type = FieldType.Ip)

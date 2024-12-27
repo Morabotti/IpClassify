@@ -1,6 +1,10 @@
 package fi.morabotti.ipclassify.websocket;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fi.morabotti.ipclassify.dto.TrafficSummary;
+import fi.morabotti.ipclassify.dto.common.WSMessage;
 import fi.morabotti.ipclassify.security.ApplicationUser;
+import fi.morabotti.ipclassify.service.consumer.AccessRequestMessageConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,6 +15,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
@@ -21,6 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class MyWebSocketHandler implements WebSocketHandler {
     private final Set<WebSocketSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final AccessRequestMessageConsumer accessRequestMessageConsumer;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
@@ -41,15 +48,17 @@ public class MyWebSocketHandler implements WebSocketHandler {
                     return Mono.empty();
                 });
 
-        Flux<WebSocketMessage> kafkaMessageCounter = Flux.empty();
-        /*
-        Flux<WebSocketMessage> kafkaMessageCounter = kafkaConsumer.countMessagesInIntervals(KafkaOptions.EXAMPLE_TOPIC, Duration.ofSeconds(10))
-                .map(count -> session.textMessage(String.format("Messages in the last 10 seconds: %d", count)))
+        Flux<WebSocketMessage> kafkaMessageCounter = accessRequestMessageConsumer
+                .countTrafficInIntervals(Duration.ofSeconds(5L))
+                .map(summary -> WSMessage.<TrafficSummary>builder()
+                        .data(summary)
+                        .type(WSMessage.MessageType.INTERVAL_RESPONSE)
+                        .build())
+                .flatMap(message -> createResponseMessage(session, message))
                 .onErrorResume(error -> {
-                    log.error("Error in Kafka message counter stream: {}", error.getMessage(), error);
+                    log.error("Error sending counter: {}", error.getMessage(), error);
                     return Mono.empty();
                 });
-        */
 
         return session.send(
                 Flux.merge(
@@ -70,6 +79,20 @@ public class MyWebSocketHandler implements WebSocketHandler {
 
     private Mono<WebSocketMessage> processUserMessage(String message, WebSocketSession session) {
         log.info("Received message from {}: {}", session.getId(), message);
-        return Mono.just(session.textMessage("Echo: " + message));
+
+        return createResponseMessage(session, WSMessage.<String>builder()
+                .type(WSMessage.MessageType.ECHO)
+                .data(message)
+                .build());
+    }
+
+    private <T> Mono<WebSocketMessage> createResponseMessage(WebSocketSession session, WSMessage<T> message) {
+        try {
+            String jsonMessage = objectMapper.writeValueAsString(message);
+            return Mono.just(session.textMessage(jsonMessage));
+        }
+        catch (Exception e) {
+            return Mono.error(e);
+        }
     }
 }

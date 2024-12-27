@@ -3,6 +3,7 @@ package fi.morabotti.ipclassify.service;
 import fi.morabotti.ipclassify.domain.RequestMessage;
 import fi.morabotti.ipclassify.dto.MockTrafficRequest;
 import fi.morabotti.ipclassify.service.producer.RequestMessageProducer;
+import fi.morabotti.ipclassify.util.IpUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class AccessLogService {
 
     private final AuthenticationService authenticationService;
     private final RequestMessageProducer producer;
+    private final IpUtility ipUtility;
 
     public Mono<RequestMessage> log(ServerHttpRequest request) {
         return authenticationService.getMe(request)
@@ -41,6 +43,7 @@ public class AccessLogService {
                         .map(InetSocketAddress::getAddress)
                         .map(InetAddress::getHostAddress)
                         .flatMap(this::cleanIpAddress)
+                        .map(ipUtility::convertPrivateIpToPublic)
                         .orElse("unknown"))
                 .application(APPLICATION_NAME)
                 .language(Optional.ofNullable(request

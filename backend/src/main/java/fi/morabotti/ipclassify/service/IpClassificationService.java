@@ -8,7 +8,10 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveValueOperations;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.Set;
 
 @Slf4j
 @Service
@@ -37,6 +40,13 @@ public class IpClassificationService {
     public Mono<IpClassification> getIpClassification(String ip) {
         return cacheOperations.get(getRedisKey(ip))
                 .defaultIfEmpty(IpClassification.empty(ip));
+    }
+
+    public Flux<IpClassification> getIpClassifications(Set<String> ips) {
+        return Flux.fromIterable(ips)
+                .map(this::getRedisKey)
+                .flatMap(i -> cacheOperations.get(i)
+                        .defaultIfEmpty(IpClassification.empty(i)));
     }
 
     public Mono<IpClassification> upsertIpClassification(IpClassification classification) {
