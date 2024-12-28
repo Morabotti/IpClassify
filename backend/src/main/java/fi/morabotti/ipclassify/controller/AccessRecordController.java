@@ -1,9 +1,15 @@
 package fi.morabotti.ipclassify.controller;
 
 import fi.morabotti.ipclassify.domain.AccessRecord;
+import fi.morabotti.ipclassify.dto.common.Pagination;
+import fi.morabotti.ipclassify.dto.query.PaginationQuery;
+import fi.morabotti.ipclassify.dto.query.SortQuery;
 import fi.morabotti.ipclassify.repository.AccessRecordRepository;
+import fi.morabotti.ipclassify.service.AccessRecordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
@@ -15,20 +21,18 @@ import java.time.Instant;
 @RequiredArgsConstructor
 @RequestMapping(value = "/api/v1/access-record")
 public class AccessRecordController {
-    private final AccessRecordRepository accessRecordRepository;
+    private final AccessRecordService accessRecordService;
 
     @GetMapping
-    public Flux<AccessRecord> getRecords() {
-        return accessRecordRepository.findAll();
+    public Mono<Pagination<AccessRecord>> get(
+            @ModelAttribute PaginationQuery pagination,
+            @ModelAttribute SortQuery sort
+    ){
+        return this.accessRecordService.getPagination(pagination, sort);
     }
 
-    @GetMapping("create")
-    public Mono<AccessRecord> createRecord() {
-        return Mono.just(AccessRecord.builder()
-                .createdAt(Instant.now())
-                .ip("192.168.0.1")
-                .build()
-        )
-                .flatMap(accessRecordRepository::save);
+    @GetMapping("/{id}")
+    public Mono<AccessRecord> get(@PathVariable("id") String id){
+        return this.accessRecordService.getById(id);
     }
 }

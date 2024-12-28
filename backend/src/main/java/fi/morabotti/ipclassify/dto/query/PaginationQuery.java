@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -12,4 +14,12 @@ import lombok.NoArgsConstructor;
 public class PaginationQuery {
     private Integer page;
     private Integer rows;
+
+    public Optional<Integer> getOptionalPage() {
+        return Optional.ofNullable(page);
+    }
+
+    public Optional<Integer> getOptionalRows() {
+        return Optional.ofNullable(rows);
+    }
 }

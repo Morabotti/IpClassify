@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,4 +19,12 @@ public class SortQuery {
 
     private String sort;
     private Order direction;
+
+    public Optional<String> getOptionalSort() {
+        return Optional.ofNullable(sort);
+    }
+
+    public Optional<Order> getOptionalDirection() {
+        return Optional.ofNullable(direction);
+    }
 }

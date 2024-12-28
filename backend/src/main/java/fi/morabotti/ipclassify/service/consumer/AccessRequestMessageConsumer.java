@@ -66,7 +66,11 @@ public class AccessRequestMessageConsumer {
         return KafkaReceiver.create(receiverOptions.subscription(SUBSCRIPTIONS))
                 .receiveAutoAck()
                 .flatMap(Flux::collectList)
-                .flatMap(this::saveBatch);
+                .flatMap(this::saveBatch)
+                .onErrorResume(error -> {
+                    log.error("Error in AccessRequestMessageConsumer: {}", error.getMessage(), error);
+                    return Mono.empty();
+                });
     }
 
     private Flux<AccessRecord> saveBatch(

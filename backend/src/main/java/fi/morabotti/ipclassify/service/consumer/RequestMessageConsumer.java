@@ -18,7 +18,6 @@ import reactor.core.publisher.Mono;
 import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,7 +41,11 @@ public class RequestMessageConsumer {
                 .flatMap(this::processBatch)
                 .flatMap(batch -> accessRequestMessageProducer
                         .sendAll(Flux.fromIterable(batch))
-                        .then(Mono.just(batch)));
+                        .then(Mono.just(batch)))
+                .onErrorResume(error -> {
+                    log.error("Error in RequestMessageConsumer: {}", error.getMessage(), error);
+                    return Mono.empty();
+                });
     }
 
     private Mono<List<AccessRequestMessage>> processBatch(
