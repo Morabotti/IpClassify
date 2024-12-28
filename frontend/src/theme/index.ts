@@ -4,6 +4,7 @@ import { getTypography } from './typography';
 import { inputCustomizations } from './custom';
 
 export * from './utils';
+export * from './palette';
 
 declare module '@mui/material/styles' {
   interface Theme {

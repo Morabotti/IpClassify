@@ -34,6 +34,7 @@ export const useAuthLayer = (): AuthContext => {
     const token = localStorage.getItem(LocalStorageKey.Token);
 
     if (auth === null && loading) {
+      // setAuth(token ?? 'token', { name: 'tester' });
       if (token) {
         try {
           const response = await authApi.getMe(token);

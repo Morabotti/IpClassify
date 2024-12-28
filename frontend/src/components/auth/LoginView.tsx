@@ -1,6 +1,6 @@
 import { Text } from '@components/common';
 import { useLogin } from '@hooks';
-import { Box, Button, Card, FormControl, FormLabel, Stack, TextField } from '@mui/material';
+import { Box, Button, Card, CircularProgress, FormControl, FormLabel, Stack, TextField } from '@mui/material';
 import { useForm } from '@tanstack/react-form';
 import { createSx } from '@theme';
 import { LoginRequest } from '@types';
@@ -11,7 +11,8 @@ const sx = createSx({
     height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4
+    marginBottom: 4,
+    gap: 2
   },
   form: {
     display: 'flex',
@@ -41,6 +42,14 @@ export const LoginView = () => {
       <Card sx={sx.card} variant='outlined'>
         <Text
           component='h1'
+          variant='h2'
+          color='primary'
+          textAlign='center'
+        >
+          IPClassify
+        </Text>
+        <Text
+          component='h2'
           variant='h4'
           sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
           gutterBottom
@@ -95,14 +104,20 @@ export const LoginView = () => {
           <Button
             type='button'
             fullWidth
+            color='secondary'
             variant='contained'
             disabled={loading}
             onClick={form.handleSubmit}
           >
-            Login
+            {loading ? (
+              <CircularProgress color='inherit' size={24} />
+            ) : 'Login'}
           </Button>
         </Box>
       </Card>
+      <Box>
+        <Text variant='body2' color='textSecondary'>Demo reactive application</Text>
+      </Box>
     </Stack>
   );
 };

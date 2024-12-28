@@ -61,12 +61,18 @@ export const inputCustomizations: Components<Theme> = {
               boxShadow: `inset 0 1px 0 ${gray[600]}, inset 0 -1px 0 1px hsl(220, 0%, 0%)`,
               border: `1px solid ${gray[700]}`,
               '&:hover': {
-                backgroundImage: 'none',
+                backgroundImage: `linear-gradient(to bottom, ${gray[600]}, ${gray[700]})`,
                 backgroundColor: gray[700],
                 boxShadow: 'none'
               },
               '&:active': {
                 backgroundColor: gray[800]
+              },
+              '&:disabled': {
+                color: gray[50],
+                backgroundColor: gray[600],
+                backgroundImage: `linear-gradient(to bottom, ${gray[500]}, ${gray[600]})`,
+                boxShadow: 'none'
               },
               ...theme.applyStyles('dark', {
                 color: 'black',

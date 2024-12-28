@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import reactor.util.annotation.Nullable;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Component
 public class RequestMessageMapper {
@@ -70,15 +71,17 @@ public class RequestMessageMapper {
                 .userAgent(message.getUserAgent())
                 .language(message.getLanguage())
                 .referrer(message.getReferrer())
-                .createdAt(message.getCreatedAt());
+                .createdAt(message.getCreatedAt())
+                .danger(Optional.ofNullable(ipClassification)
+                        .map(IpClassification::getIsDanger)
+                        .orElse(false))
+                .warning(Optional.ofNullable(ipClassification)
+                        .map(IpClassification::getIsWarning)
+                        .orElse(false));
+
 
         if (processed != null && processed) {
             builder = builder.processedAt(Instant.now());
-        }
-
-        if (ipClassification != null) {
-            builder = builder.danger(ipClassification.getIsDanger())
-                    .warning(ipClassification.getIsWarning());
         }
 
         if (location != null) {

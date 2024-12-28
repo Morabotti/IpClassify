@@ -13,6 +13,7 @@ import reactor.util.annotation.Nullable;
 public class WSMessage<T> {
     public enum MessageType {
         ECHO,
+        INTERVAL_HISTORY,
         INTERVAL_RESPONSE
     }
 

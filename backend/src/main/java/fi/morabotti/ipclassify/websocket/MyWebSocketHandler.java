@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.common.WSMessage;
 import fi.morabotti.ipclassify.security.ApplicationUser;
+import fi.morabotti.ipclassify.service.AccessRecordService;
 import fi.morabotti.ipclassify.service.consumer.AccessRequestMessageConsumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,8 +16,8 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class MyWebSocketHandler implements WebSocketHandler {
     private final Set<WebSocketSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final AccessRequestMessageConsumer accessRequestMessageConsumer;
+    private final AccessRecordService accessRecordService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -40,6 +42,18 @@ public class MyWebSocketHandler implements WebSocketHandler {
                 session.getId(), user.map(ApplicationUser::getUsername).orElse("anonymous")
         );
 
+        Mono<WebSocketMessage> greetMessage = accessRecordService
+                .getBackTrackedSummary(AccessRecordService.HISTORY_SIZE)
+                .collectList()
+                .flatMap(i -> createResponseMessage(session, WSMessage.<List<TrafficSummary>>builder()
+                        .data(i)
+                        .type(WSMessage.MessageType.INTERVAL_HISTORY)
+                        .build()))
+                .onErrorResume(error -> {
+                    log.error("Error sending history: {}", error.getMessage(), error);
+                    return Mono.empty();
+                });
+
         Flux<WebSocketMessage> userMessageHandler = session.receive()
                 .map(WebSocketMessage::getPayloadAsText)
                 .flatMap(message -> processUserMessage(message, session))
@@ -48,8 +62,7 @@ public class MyWebSocketHandler implements WebSocketHandler {
                     return Mono.empty();
                 });
 
-        Flux<WebSocketMessage> kafkaMessageCounter = accessRequestMessageConsumer
-                .countTrafficInIntervals(Duration.ofSeconds(5L))
+        Flux<WebSocketMessage> kafkaMessageCounter = accessRequestMessageConsumer.getSummaryTrafficStream()
                 .map(summary -> WSMessage.<TrafficSummary>builder()
                         .data(summary)
                         .type(WSMessage.MessageType.INTERVAL_RESPONSE)
@@ -61,9 +74,12 @@ public class MyWebSocketHandler implements WebSocketHandler {
                 });
 
         return session.send(
-                Flux.merge(
-                        userMessageHandler,
-                        kafkaMessageCounter
+                Flux.concat(
+                        greetMessage,
+                        Flux.merge(
+                                userMessageHandler,
+                                kafkaMessageCounter
+                        )
                 )
         )
                 .doFinally(signalType -> {

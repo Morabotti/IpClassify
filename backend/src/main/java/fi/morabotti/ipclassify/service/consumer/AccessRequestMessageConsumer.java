@@ -6,6 +6,7 @@ import fi.morabotti.ipclassify.domain.AccessRequestMessage;
 import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.mapper.RequestMessageMapper;
 import fi.morabotti.ipclassify.repository.AccessRecordRepository;
+import fi.morabotti.ipclassify.service.AccessRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,6 +17,9 @@ import reactor.kafka.receiver.KafkaReceiver;
 import reactor.kafka.receiver.ReceiverOptions;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,7 +31,11 @@ public class AccessRequestMessageConsumer {
     private final AccessRecordRepository accessRecordRepository;
     private final ReceiverOptions<String, AccessRequestMessage> analysisReceiverOptions;
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss")
+            .withZone(ZoneId.systemDefault());
+
     private final static Set<String> SUBSCRIPTIONS = Set.of(KafkaOptions.ACCESS_REQUEST_MESSAGE_TOPIC);
+    private final Flux<TrafficSummary> sharedTrafficSummaryStream;
 
     public AccessRequestMessageConsumer(
             ReceiverOptions<String, AccessRequestMessage> receiverOptions,
@@ -37,9 +45,27 @@ public class AccessRequestMessageConsumer {
         this.accessRecordRepository = accessRecordRepository;
         this.receiverOptions = receiverOptions;
         this.analysisReceiverOptions = analysisReceiverOptions;
+        this.sharedTrafficSummaryStream = createTrafficInIntervals(
+                Duration.ofSeconds(AccessRecordService.FETCH_INTERVAL))
+                .share();
     }
 
-    public Flux<TrafficSummary> countTrafficInIntervals(Duration interval) {
+    public Flux<AccessRecord> consume() {
+        return KafkaReceiver.create(receiverOptions.subscription(SUBSCRIPTIONS))
+                .receiveAutoAck()
+                .flatMap(Flux::collectList)
+                .flatMap(this::saveBatch)
+                .onErrorResume(error -> {
+                    log.error("Error in AccessRequestMessageConsumer: {}", error.getMessage(), error);
+                    return Mono.empty();
+                });
+    }
+
+    public Flux<TrafficSummary> getSummaryTrafficStream() {
+        return sharedTrafficSummaryStream;
+    }
+
+    private Flux<TrafficSummary> createTrafficInIntervals(Duration interval) {
         return KafkaReceiver.create(analysisReceiverOptions.subscription(SUBSCRIPTIONS))
                 .receiveAutoAck()
                 .flatMap(Flux::collectList)
@@ -52,23 +78,13 @@ public class AccessRequestMessageConsumer {
                                 .map(count -> Map.entry(group.key(), count)))
                         .collectMap(Map.Entry::getKey, Map.Entry::getValue))
                 .map(counts -> TrafficSummary.builder()
+                        .time(formatter.format(Instant.now()))
                         .normal(counts.getOrDefault(TrafficSummary.Level.NORMAL, 0L))
                         .warning(counts.getOrDefault(TrafficSummary.Level.WARNING, 0L))
                         .danger(counts.getOrDefault(TrafficSummary.Level.DANGER, 0L))
                         .build())
                 .onErrorResume(error -> {
                     log.error("Error in Kafka message counter stream: {}", error.getMessage(), error);
-                    return Mono.empty();
-                });
-    }
-
-    public Flux<AccessRecord> consume() {
-        return KafkaReceiver.create(receiverOptions.subscription(SUBSCRIPTIONS))
-                .receiveAutoAck()
-                .flatMap(Flux::collectList)
-                .flatMap(this::saveBatch)
-                .onErrorResume(error -> {
-                    log.error("Error in AccessRequestMessageConsumer: {}", error.getMessage(), error);
                     return Mono.empty();
                 });
     }

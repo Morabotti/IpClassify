@@ -6,6 +6,7 @@
     "start": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "types": "tsc",
     "lint": "eslint .",
     "format": "eslint . --fix"
   },
@@ -20,18 +21,20 @@
     "@mui/material": "^6.3.0",
     "@mui/x-date-pickers": "^7.23.3",
     "@tanstack/react-form": "^0.40.4",
-    "@tanstack/react-query": "^5.62.10",
+    "@tanstack/react-query": "^5.62.11",
     "@tanstack/zod-form-adapter": "^0.40.4",
     "dayjs": "^1.11.13",
     "jotai": "^2.11.0",
     "react": "^19.0.0",
     "react-router": "^7.1.1",
     "react-router-dom": "^7.1.1",
+    "recharts": "^2.15.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@stylistic/eslint-plugin": "^2.12.1",
+    "@types/lodash": "^4.17.13",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
@@ -45,6 +48,6 @@
     "globals": "^15.14.0",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.18.2",
-    "vite": "^6.0.5"
+    "vite": "^6.0.6"
   }
 }

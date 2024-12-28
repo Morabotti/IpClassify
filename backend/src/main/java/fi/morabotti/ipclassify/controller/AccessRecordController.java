@@ -1,6 +1,7 @@
 package fi.morabotti.ipclassify.controller;
 
 import fi.morabotti.ipclassify.domain.AccessRecord;
+import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.common.Pagination;
 import fi.morabotti.ipclassify.dto.query.PaginationQuery;
 import fi.morabotti.ipclassify.dto.query.SortQuery;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,5 +36,10 @@ public class AccessRecordController {
     @GetMapping("/{id}")
     public Mono<AccessRecord> get(@PathVariable("id") String id){
         return this.accessRecordService.getById(id);
+    }
+
+    @GetMapping("/history")
+    public Flux<TrafficSummary> getHistory(){
+        return this.accessRecordService.getBackTrackedSummary(5L);
     }
 }

@@ -15,3 +15,10 @@ export interface AuthResponse {
 export interface AuthUser {
   name: string;
 }
+
+export interface TrafficSummary {
+  normal: number;
+  warning: number;
+  danger: number;
+  time: string;
+}

@@ -2,9 +2,9 @@ import { AppBar, LinearProgress, Box, Tooltip } from '@mui/material';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Text, WebSocketStatusChip } from '@components/common';
 import { MaterialSxProps, createSx } from '@theme';
-import { ArrowDropDown, SvgIconComponent } from '@mui/icons-material';
+import { ArrowDropDown, SvgIconComponent, Troubleshoot } from '@mui/icons-material';
 import { useAtomValue } from 'jotai';
-import { loadingAtom } from '@/atoms';
+import { loadingAtom } from '@atoms';
 
 const APP_BAR_HEIGHT = '48px;';
 
@@ -192,13 +192,13 @@ export const ApplicationNavigation = ({ children }: Props) => {
           <Box display='flex' width='100%' height='100%' sx={{ userSelect: 'none' }}>
             <Box display='flex' sx={sx.applicationNav}>
               <Box display='flex' sx={sx.applicationName} component={Link} to='/'>
-                <Box width={30} height={30} bgcolor='text.primary' />
+                <Troubleshoot color='primary' sx={{ width: 26, height: 26, marginBottom: '4px' }} />
                 <Text
-                  ml={1}
+                  ml={0.5}
                   color='text.primary'
                   fontWeight='500'
                 >
-                  IP Classifier
+                  IPClassify
                 </Text>
               </Box>
               <NavigationButton to='/' active={pathname === '/'}>
