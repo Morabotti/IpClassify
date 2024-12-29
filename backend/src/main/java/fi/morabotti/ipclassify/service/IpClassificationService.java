@@ -6,11 +6,10 @@ import fi.morabotti.ipclassify.dto.query.PaginationQuery;
 import fi.morabotti.ipclassify.dto.query.SortQuery;
 import fi.morabotti.ipclassify.repository.CustomIpClassificationRepository;
 import fi.morabotti.ipclassify.repository.IpClassificationRepository;
-import fi.morabotti.ipclassify.util.PaginationUtility;
+import fi.morabotti.ipclassify.util.QueryUtility;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.ReactiveValueOperations;
 import org.springframework.stereotype.Service;
@@ -50,7 +49,7 @@ public class IpClassificationService {
             PaginationQuery pagination,
             SortQuery sort
     ) {
-        return customIpClassificationRepository.getPaginated(PaginationUtility.toPageable(pagination, sort));
+        return customIpClassificationRepository.getPaginated(QueryUtility.toPageable(pagination, sort));
     };
 
     public Mono<IpClassification> getIpClassification(String ip) {
@@ -60,9 +59,8 @@ public class IpClassificationService {
 
     public Flux<IpClassification> getIpClassifications(Set<String> ips) {
         return Flux.fromIterable(ips)
-                .map(this::getRedisKey)
-                .flatMap(i -> cacheOperations.get(i)
-                        .defaultIfEmpty(IpClassification.empty(i)));
+                .flatMap(ip -> cacheOperations.get(getRedisKey(ip))
+                        .defaultIfEmpty(IpClassification.empty(ip)));
     }
 
     public Mono<IpClassification> upsertIpClassification(IpClassification classification) {

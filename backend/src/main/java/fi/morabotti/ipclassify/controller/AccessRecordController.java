@@ -1,8 +1,10 @@
 package fi.morabotti.ipclassify.controller;
 
 import fi.morabotti.ipclassify.domain.AccessRecord;
+import fi.morabotti.ipclassify.dto.IpSummary;
 import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.common.Pagination;
+import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.dto.query.PaginationQuery;
 import fi.morabotti.ipclassify.dto.query.SortQuery;
 import fi.morabotti.ipclassify.repository.AccessRecordRepository;
@@ -28,9 +30,10 @@ public class AccessRecordController {
     @GetMapping
     public Mono<Pagination<AccessRecord>> get(
             @ModelAttribute PaginationQuery pagination,
-            @ModelAttribute SortQuery sort
+            @ModelAttribute SortQuery sort,
+            @ModelAttribute DateQuery date
     ){
-        return this.accessRecordService.getPagination(pagination, sort);
+        return this.accessRecordService.getPagination(pagination, sort, date);
     }
 
     @GetMapping("/{id}")
@@ -38,8 +41,8 @@ public class AccessRecordController {
         return this.accessRecordService.getById(id);
     }
 
-    @GetMapping("/history")
-    public Flux<TrafficSummary> getHistory(){
-        return this.accessRecordService.getBackTrackedSummary(5L);
+    @GetMapping("/popular")
+    public Flux<IpSummary> get(){
+        return this.accessRecordService.getCommonRecords();
     }
 }

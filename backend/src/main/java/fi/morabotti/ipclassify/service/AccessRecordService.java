@@ -1,13 +1,15 @@
 package fi.morabotti.ipclassify.service;
 
 import fi.morabotti.ipclassify.domain.AccessRecord;
+import fi.morabotti.ipclassify.dto.IpSummary;
 import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.common.Pagination;
+import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.dto.query.PaginationQuery;
 import fi.morabotti.ipclassify.dto.query.SortQuery;
 import fi.morabotti.ipclassify.repository.AccessRecordRepository;
 import fi.morabotti.ipclassify.repository.CustomAccessRecordRepository;
-import fi.morabotti.ipclassify.util.PaginationUtility;
+import fi.morabotti.ipclassify.util.QueryUtility;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -35,9 +37,13 @@ public class AccessRecordService {
 
     public Mono<Pagination<AccessRecord>> getPagination(
             PaginationQuery pagination,
-            SortQuery sort
+            SortQuery sort,
+            DateQuery dateQuery
     ) {
-        return customAccessRecordRepository.getPaginated(PaginationUtility.toPageable(pagination, sort));
+        return customAccessRecordRepository.getPaginated(
+                QueryUtility.toPageable(pagination, sort),
+                dateQuery
+        );
     };
 
     public Mono<AccessRecord> getById(String id) {
@@ -48,6 +54,10 @@ public class AccessRecordService {
         return accessRecordRepository.deleteById(id)
                 .thenReturn(true)
                 .onErrorReturn(false);
+    }
+
+    public Flux<IpSummary> getCommonRecords() {
+        return customAccessRecordRepository.getCommonRecords(new DateQuery(), 10, null);
     }
 
     public Flux<TrafficSummary> getBackTrackedSummary(Long size) {
