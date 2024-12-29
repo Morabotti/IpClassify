@@ -20,7 +20,7 @@ export const checkResponse = async (response: Response): Promise<Response> => {
 
 export const createClient = (baseUrl: string, baseAddress: string) => {
   return <T>(url: string, method?: HttpMethod, options?: RequestOptions): Promise<T> => {
-    const searchParams = createSearchParams(options?.header as unknown[] ?? []);
+    const searchParams = createSearchParams(options?.params as unknown[] ?? []);
 
     return fetch(
       `${baseUrl}${baseAddress}${url}${searchParams ? `?${searchParams}` : ''}`,

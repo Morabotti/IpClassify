@@ -2,6 +2,7 @@ package fi.morabotti.ipclassify.service;
 
 import fi.morabotti.ipclassify.domain.AccessRecord;
 import fi.morabotti.ipclassify.dto.AccessSummary;
+import fi.morabotti.ipclassify.dto.TrafficLevel;
 import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.common.Pagination;
 import fi.morabotti.ipclassify.dto.query.AggregationQuery;
@@ -28,6 +29,7 @@ import java.util.stream.IntStream;
 public class AccessRecordService {
     private final CustomAccessRecordRepository customAccessRecordRepository;
     private final AccessRecordRepository accessRecordRepository;
+    private final IpClassificationService ipClassificationService;
 
     public static final Long FETCH_INTERVAL = 1L;
     public static final Long HISTORY_SIZE = 60L;
@@ -58,11 +60,20 @@ public class AccessRecordService {
             AggregationQuery aggregation,
             CommonQuery common
     ) {
-        return customAccessRecordRepository.getMostCommonAggregatedBy(
+        Flux<AccessSummary> result = customAccessRecordRepository.getMostCommonAggregatedBy(
                 date,
                 aggregation,
                 common.getLevel()
         );
+
+        // Only support dynamic level setting with ip aggregations.
+        if (common.getLevel() == null && aggregation.getField().equals("ip")) {
+            return result.flatMap(i -> ipClassificationService.getIpClassification(i.getLabel())
+                    .map(TrafficLevel::from)
+                    .map(level -> i.toBuilder().level(level).build()));
+        }
+
+        return result;
     }
 
     public Flux<TrafficSummary> getBackTrackedSummary(Long size) {

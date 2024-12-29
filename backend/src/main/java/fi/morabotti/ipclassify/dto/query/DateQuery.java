@@ -23,4 +23,8 @@ public class DateQuery {
     public Optional<Instant> getOptionalAfter() {
         return Optional.ofNullable(after);
     }
+
+    public static DateQuery of(Instant before, Instant after) {
+        return new DateQuery(before, after);
+    }
 }

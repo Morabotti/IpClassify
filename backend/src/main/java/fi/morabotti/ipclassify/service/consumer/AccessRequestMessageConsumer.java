@@ -92,6 +92,9 @@ public class AccessRequestMessageConsumer {
                 records.stream()
                         .map(ConsumerRecord::value)
                         .map(RequestMessageMapper::map)
+                        .map(record -> record.toBuilder()
+                                .uploadedAt(Instant.now())
+                                .build())
                         .toList()
         );
     }

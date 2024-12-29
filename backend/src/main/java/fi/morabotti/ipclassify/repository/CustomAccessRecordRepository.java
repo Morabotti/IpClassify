@@ -97,11 +97,19 @@ public class CustomAccessRecordRepository {
                         String.format("most_common_%s", aggregation.getField()),
                         Aggregation.of(
                                 t -> t.terms(
-                                        t1 -> t1.field(aggregation.getField())
+                                        t1 -> t1.field(formatTermSearchField(aggregation.getField()))
                                                 .size(aggregation.getOptionalCount().orElse(10))
                                 )
                         )
                 )
                 .build();
+    }
+
+    private String formatTermSearchField(String field) {
+        if (field.equals("ip")) {
+            return field;
+        }
+
+        return String.format("%s.keyword", field);
     }
 }

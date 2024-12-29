@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.time.Instant;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
 @Document(indexName = "access-record")
 public class AccessRecord {
     @Id

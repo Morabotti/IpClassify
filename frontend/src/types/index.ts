@@ -1,3 +1,6 @@
+import { TrafficLevel } from '@enums';
+import { DateQuery } from './query';
+
 export * from './base';
 export * from './query';
 export * from './websocket';
@@ -26,3 +29,44 @@ export interface TrafficSummary {
 export interface TrafficSummaryFormatted extends TrafficSummary {
   timestamp: string;
 }
+
+export interface AccessRecord {
+  id: string;
+  application: string;
+  path: string;
+  method: string;
+  ip: string;
+  requestId: string;
+  userId: string;
+  userAgent: string;
+  referrer: string;
+  acceptLanguage: string;
+  continent: string;
+  country: string;
+  region: string;
+  city: string;
+  zip: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  timezone: string | null;
+  isp: string;
+  org: string;
+  isMobile: boolean;
+  isProxy: boolean;
+  isHosting: boolean;
+  danger: boolean;
+  warning: boolean;
+  createdAt: string;
+  processedAt: string;
+  uploadedAt: string;
+}
+
+export interface AccessSummary {
+  label: string;
+  level: TrafficLevel;
+  count: number;
+}
+
+export interface DateQueryWithLabel extends DateQuery {
+  label: string | null;
+};

@@ -6,3 +6,4 @@ export * from './ApplicationNavigation';
 export * from './ConfirmationDialog';
 export * from './CenterMessage';
 export * from './WebSocketStatusChip';
+export * from './TrafficLevelChip';

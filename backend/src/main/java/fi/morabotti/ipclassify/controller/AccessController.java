@@ -31,20 +31,20 @@ public class AccessController {
             @ModelAttribute SortQuery sort,
             @ModelAttribute DateQuery date
     ){
-        return this.accessRecordService.getPagination(pagination, sort, date);
+        return accessRecordService.getPagination(pagination, sort, date);
     }
 
     @GetMapping("/{id}")
     public Mono<AccessRecord> get(@PathVariable("id") String id){
-        return this.accessRecordService.getById(id);
+        return accessRecordService.getById(id);
     }
 
-    @GetMapping("/popular")
+    @GetMapping("/summary")
     public Flux<AccessSummary> get(
             @ModelAttribute DateQuery date,
             @ModelAttribute @Valid AggregationQuery aggregation,
             @ModelAttribute CommonQuery common
     ) {
-        return this.accessRecordService.getCommonRecords(date, aggregation, common);
+        return accessRecordService.getCommonRecords(date, aggregation, common);
     }
 }

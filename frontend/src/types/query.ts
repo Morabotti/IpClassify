@@ -1,8 +1,10 @@
-export type TableOrder = 'asc' | 'desc';
+import { TrafficLevel } from '@enums';
+
+export type TableOrder = 'ASC' | 'DESC';
 
 export interface DateQuery {
-  before?: string | null;
-  after?: string | null;
+  before?: number | null;
+  after?: number | null;
 }
 
 export interface PaginationQuery {
@@ -12,5 +14,14 @@ export interface PaginationQuery {
 
 export interface SortQuery {
   sort?: string;
-  direction: TableOrder;
+  direction?: TableOrder;
+}
+
+export interface AggregationQuery {
+  field: string;
+  count?: number;
+}
+
+export interface CommonQuery {
+  level?: TrafficLevel | null;
 }

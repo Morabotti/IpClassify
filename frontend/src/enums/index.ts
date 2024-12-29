@@ -5,7 +5,9 @@ export enum LocalStorageKey {
 }
 
 export enum Client {
-  GetTodo = 'todo'
+  GetAccessRecords = 'access-records',
+  GetAccessById = 'access-records-by-id',
+  GetAccessSummary = 'access-record-summary'
 }
 
 export enum QueryParams {
@@ -15,4 +17,10 @@ export enum QueryParams {
   Params = 'params',
   Order = 'order',
   OrderBy = 'orderBy'
+}
+
+export enum TrafficLevel {
+  NORMAL = 'NORMAL',
+  WARNING = 'WARNING',
+  DANGER = 'DANGER'
 }

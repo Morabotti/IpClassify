@@ -1,8 +1,8 @@
+import { FC, ReactNode } from 'react';
 import { colors, CssBaseline, GlobalStyles, StyledEngineProvider, ThemeProvider } from '@mui/material';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { FC, ReactNode } from 'react';
 import { theme } from '@theme';
 import { LocalStorageKey } from '@enums';
 import { AuthProvider } from '@contexts/AuthContext';
@@ -12,7 +12,8 @@ const queryClient = new QueryClient({
     queries: {
       refetchOnWindowFocus: true,
       staleTime: 30 * 1000,
-      gcTime: 2 * 60 * 1000
+      gcTime: 1 * 60 * 1000,
+      retry: 0
     }
   }
 });
