@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class IpSummary {
-    private String ip;
-    private TrafficSummary.Level level;
+public class AccessSummary {
+    private String label;
+    private TrafficLevel level;
     private Long count;
 }

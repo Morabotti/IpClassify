@@ -1,29 +1,20 @@
 package fi.morabotti.ipclassify.repository;
 
-import co.elastic.clients.elasticsearch._types.aggregations.Aggregate;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
-import co.elastic.clients.elasticsearch._types.aggregations.BucketMetricValueAggregate;
-import co.elastic.clients.elasticsearch._types.aggregations.StringTermsAggregate;
-import co.elastic.clients.elasticsearch._types.aggregations.StringTermsBucket;
-import co.elastic.clients.elasticsearch._types.aggregations.SumAggregate;
 import fi.morabotti.ipclassify.domain.AccessRecord;
-import fi.morabotti.ipclassify.domain.IpClassification;
-import fi.morabotti.ipclassify.dto.IpSummary;
-import fi.morabotti.ipclassify.dto.TrafficSummary;
+import fi.morabotti.ipclassify.dto.AccessSummary;
+import fi.morabotti.ipclassify.dto.TrafficLevel;
 import fi.morabotti.ipclassify.dto.common.Pagination;
+import fi.morabotti.ipclassify.dto.query.AggregationQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.util.AggregationUtility;
 import fi.morabotti.ipclassify.util.QueryUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregation;
-import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregations;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.client.elc.NativeQueryBuilder;
-import org.springframework.data.elasticsearch.core.AggregationsContainer;
 import org.springframework.data.elasticsearch.core.ReactiveSearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.Query;
@@ -72,10 +63,27 @@ public class CustomAccessRecordRepository {
                 .map(SearchHit::getContent);
     }
 
-    public Flux<IpSummary> getCommonRecords(
+    public Flux<AccessSummary> getMostCommonAggregatedBy(
+            DateQuery date,
+            AggregationQuery aggregation,
+            @Nullable TrafficLevel level
+    ) {
+        return reactiveSearchOperations.aggregate(
+                getCommonRecordsQuery(date, aggregation, level),
+                AccessRecord.class
+        )
+                .flatMap(AggregationUtility::formatStringTermAggregation)
+                .map(i -> AccessSummary.builder()
+                        .label(i.key().stringValue())
+                        .count(i.docCount())
+                        .level(level)
+                        .build());
+    }
+
+    private Query getCommonRecordsQuery(
             DateQuery dateQuery,
-            int mostPopular,
-            @Nullable TrafficSummary.Level level
+            AggregationQuery aggregation,
+            @Nullable TrafficLevel level
     ) {
         CriteriaQuery criteriaQuery = new CriteriaQuery(QueryUtility.toCriteria("createdAt", dateQuery));
 
@@ -83,25 +91,17 @@ public class CustomAccessRecordRepository {
             criteriaQuery = criteriaQuery.addCriteria(QueryUtility.toCriteria(level));
         }
 
-        Query query = new NativeQueryBuilder()
+        return new NativeQueryBuilder()
                 .withQuery(criteriaQuery)
                 .withAggregation(
-                        "most_common_ip",
+                        String.format("most_common_%s", aggregation.getField()),
                         Aggregation.of(
                                 t -> t.terms(
-                                        t1 -> t1.field("ip").size(mostPopular)
+                                        t1 -> t1.field(aggregation.getField())
+                                                .size(aggregation.getOptionalCount().orElse(10))
                                 )
                         )
                 )
                 .build();
-
-
-        return reactiveSearchOperations.aggregate(query, AccessRecord.class)
-                .flatMap(AggregationUtility::formatStringTermAggregation)
-                .map(i -> IpSummary.builder()
-                        .ip(i.key().stringValue())
-                        .count(i.docCount())
-                        .level(level)
-                        .build());
     }
 }

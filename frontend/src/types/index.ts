@@ -20,5 +20,9 @@ export interface TrafficSummary {
   normal: number;
   warning: number;
   danger: number;
-  time: string;
+  time: number;
+}
+
+export interface TrafficSummaryFormatted extends TrafficSummary {
+  timestamp: string;
 }

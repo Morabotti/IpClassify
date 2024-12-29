@@ -1,5 +1,6 @@
 package fi.morabotti.ipclassify.util;
 
+import fi.morabotti.ipclassify.dto.TrafficLevel;
 import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.dto.query.PaginationQuery;
@@ -45,12 +46,12 @@ public class QueryUtility {
         return criteria;
     }
 
-    public static Criteria toCriteria(TrafficSummary.Level level) {
-        if (level == TrafficSummary.Level.DANGER) {
+    public static Criteria toCriteria(TrafficLevel level) {
+        if (level == TrafficLevel.DANGER) {
             return Criteria.where("danger").is(true);
         }
 
-        if (level == TrafficSummary.Level.WARNING) {
+        if (level == TrafficLevel.WARNING) {
             return Criteria.where("warning").is(true);
         }
 

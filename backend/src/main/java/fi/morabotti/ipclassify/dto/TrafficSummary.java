@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,11 +15,5 @@ public class TrafficSummary {
     private Long normal;
     private Long warning;
     private Long danger;
-    private String time;
-
-    public enum Level {
-        NORMAL,
-        WARNING,
-        DANGER
-    }
+    private Instant time;
 }

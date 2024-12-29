@@ -1,7 +1,7 @@
 import { trafficSummaryAtom } from '@atoms';
 import { useAuth } from '@hooks';
 import { TrafficSummary, WebSocketState, WSMessage, WSMessageType } from '@types';
-import { appendAndShift, formatWSMessage } from '@utils/websocketUtils';
+import { appendAndShift, formatTrafficSummary, formatWSMessage } from '@utils/websocketUtils';
 import { useSetAtom } from 'jotai';
 import { createContext, ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 
@@ -37,8 +37,7 @@ export const WebSocketProvider = ({ children }: Props): React.ReactNode => {
         console.log(message.data);
         return;
       case WSMessageType.INTERVAL_HISTORY:
-        console.log(message.data);
-        setTrafficSummary(message.data as TrafficSummary[]);
+        setTrafficSummary((message.data as TrafficSummary[]).map(formatTrafficSummary));
         return;
       case WSMessageType.INTERVAL_RESPONSE:
         setTrafficSummary(appendAndShift(message.data as TrafficSummary));

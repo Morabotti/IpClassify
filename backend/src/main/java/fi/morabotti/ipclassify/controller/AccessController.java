@@ -1,14 +1,15 @@
 package fi.morabotti.ipclassify.controller;
 
 import fi.morabotti.ipclassify.domain.AccessRecord;
-import fi.morabotti.ipclassify.dto.IpSummary;
-import fi.morabotti.ipclassify.dto.TrafficSummary;
+import fi.morabotti.ipclassify.dto.AccessSummary;
 import fi.morabotti.ipclassify.dto.common.Pagination;
+import fi.morabotti.ipclassify.dto.query.AggregationQuery;
+import fi.morabotti.ipclassify.dto.query.CommonQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.dto.query.PaginationQuery;
 import fi.morabotti.ipclassify.dto.query.SortQuery;
-import fi.morabotti.ipclassify.repository.AccessRecordRepository;
 import fi.morabotti.ipclassify.service.AccessRecordService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -18,13 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/api/v1/access-record")
-public class AccessRecordController {
+@RequestMapping(value = "/api/v1/access")
+public class AccessController {
     private final AccessRecordService accessRecordService;
 
     @GetMapping
@@ -42,7 +40,11 @@ public class AccessRecordController {
     }
 
     @GetMapping("/popular")
-    public Flux<IpSummary> get(){
-        return this.accessRecordService.getCommonRecords();
+    public Flux<AccessSummary> get(
+            @ModelAttribute DateQuery date,
+            @ModelAttribute @Valid AggregationQuery aggregation,
+            @ModelAttribute CommonQuery common
+    ) {
+        return this.accessRecordService.getCommonRecords(date, aggregation, common);
     }
 }

@@ -1,5 +1,6 @@
 package fi.morabotti.ipclassify.config;
 
+import fi.morabotti.ipclassify.security.ApplicationUser;
 import fi.morabotti.ipclassify.security.JwtAuthenticationFilter;
 import fi.morabotti.ipclassify.security.JwtTokenProvider;
 import fi.morabotti.ipclassify.websocket.MyWebSocketHandler;
@@ -49,7 +50,7 @@ public class WebSocketRouteConfig {
             }
 
             Authentication authentication = jwtTokenProvider.getAuthentication(token.get());
-            exchange.getAttributes().put("user", authentication.getPrincipal());
+            webSocketHandler.setCurrentUser((ApplicationUser)authentication.getPrincipal());
             WebSocketService webSocketService = new HandshakeWebSocketService();
             return webSocketService.handleRequest(exchange, webSocketHandler);
         };

@@ -6,7 +6,6 @@ import { CartesianGrid, XAxis, YAxis, ResponsiveContainer, AreaChart, Tooltip, A
 
 export const ActiveAccessRecordChart = () => {
   const trafficSummary = useAtomValue(trafficSummaryAtom);
-  const hour = dayjs().hour();
 
   if (trafficSummary === null) {
     return (
@@ -65,9 +64,15 @@ export const ActiveAccessRecordChart = () => {
             fill='url(#colorWarning)'
           />
           <CartesianGrid strokeDasharray='3 3' />
-          <XAxis dataKey='time' />
+          <XAxis dataKey='timestamp' />
           <YAxis />
-          <Tooltip labelFormatter={label => `Records: ${hour}:${label}`} />
+          <Tooltip
+            labelFormatter={(label, [first]) => {
+              const time = first?.payload?.time ?? null;
+              if (!time) return `Records: --:--:--`;
+              return `Records: ${dayjs.unix(time).format('HH:mm:ss')}`;
+            }}
+          />
         </AreaChart>
       </ResponsiveContainer>
     </div>

@@ -6,8 +6,6 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchAggregatio
 import org.springframework.data.elasticsearch.core.AggregationContainer;
 import reactor.core.publisher.Flux;
 
-import java.util.List;
-
 public class AggregationUtility {
     public static Flux<StringTermsBucket> formatStringTermAggregation(AggregationContainer<?> map) {
         ElasticsearchAggregation container = (ElasticsearchAggregation)map;

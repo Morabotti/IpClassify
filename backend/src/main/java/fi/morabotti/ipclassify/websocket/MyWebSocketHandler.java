@@ -12,13 +12,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -29,18 +27,14 @@ public class MyWebSocketHandler implements WebSocketHandler {
     private final Set<WebSocketSession> sessions = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final AccessRequestMessageConsumer accessRequestMessageConsumer;
     private final AccessRecordService accessRecordService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    private ApplicationUser user;
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         sessions.add(session);
-
-        Optional<ApplicationUser> user = getUser(session);
-
-        log.info(
-                "New session: {} with username {}",
-                session.getId(), user.map(ApplicationUser::getUsername).orElse("anonymous")
-        );
+        log.info("New session: {} with username {}", session.getId(), user.getUsername());
 
         Mono<WebSocketMessage> greetMessage = accessRecordService
                 .getBackTrackedSummary(AccessRecordService.HISTORY_SIZE)
@@ -88,9 +82,8 @@ public class MyWebSocketHandler implements WebSocketHandler {
                 });
     }
 
-    private Optional<ApplicationUser> getUser(WebSocketSession session) {
-        return Optional.ofNullable((ServerWebExchange)session.getAttributes().get(ServerWebExchange.class.getName()))
-                .map(exchange -> (ApplicationUser)exchange.getAttributes().get("user"));
+    public void setCurrentUser(ApplicationUser user) {
+        this.user = user;
     }
 
     private Mono<WebSocketMessage> processUserMessage(String message, WebSocketSession session) {

@@ -1,6 +1,6 @@
-import { TrafficSummary } from '@types';
+import { TrafficSummary, TrafficSummaryFormatted } from '@types';
 import { atom } from 'jotai';
 
 export const loadingAtom = atom(false);
 
-export const trafficSummaryAtom = atom<TrafficSummary[] | null>(null);
+export const trafficSummaryAtom = atom<TrafficSummaryFormatted[] | null>(null);

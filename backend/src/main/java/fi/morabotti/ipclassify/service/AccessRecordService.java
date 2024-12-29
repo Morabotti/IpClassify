@@ -1,9 +1,11 @@
 package fi.morabotti.ipclassify.service;
 
 import fi.morabotti.ipclassify.domain.AccessRecord;
-import fi.morabotti.ipclassify.dto.IpSummary;
+import fi.morabotti.ipclassify.dto.AccessSummary;
 import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.common.Pagination;
+import fi.morabotti.ipclassify.dto.query.AggregationQuery;
+import fi.morabotti.ipclassify.dto.query.CommonQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.dto.query.PaginationQuery;
 import fi.morabotti.ipclassify.dto.query.SortQuery;
@@ -16,8 +18,6 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -28,9 +28,6 @@ import java.util.stream.IntStream;
 public class AccessRecordService {
     private final CustomAccessRecordRepository customAccessRecordRepository;
     private final AccessRecordRepository accessRecordRepository;
-
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("mm:ss")
-            .withZone(ZoneId.systemDefault());
 
     public static final Long FETCH_INTERVAL = 1L;
     public static final Long HISTORY_SIZE = 60L;
@@ -56,8 +53,16 @@ public class AccessRecordService {
                 .onErrorReturn(false);
     }
 
-    public Flux<IpSummary> getCommonRecords() {
-        return customAccessRecordRepository.getCommonRecords(new DateQuery(), 10, null);
+    public Flux<AccessSummary> getCommonRecords(
+            DateQuery date,
+            AggregationQuery aggregation,
+            CommonQuery common
+    ) {
+        return customAccessRecordRepository.getMostCommonAggregatedBy(
+                date,
+                aggregation,
+                common.getLevel()
+        );
     }
 
     public Flux<TrafficSummary> getBackTrackedSummary(Long size) {
@@ -78,7 +83,7 @@ public class AccessRecordService {
                         .map(i -> {
                             List<AccessRecord> record = map.getOrDefault(i, List.of());
                             return TrafficSummary.builder()
-                                    .time(formatter.format(now.minusSeconds(i * FETCH_INTERVAL)))
+                                    .time(now.minusSeconds(i * FETCH_INTERVAL))
                                     .danger(record.stream().filter(AccessRecord::getDanger).count())
                                     .warning(record.stream().filter(AccessRecord::getWarning).count())
                                     .normal(record.stream()
@@ -92,8 +97,7 @@ public class AccessRecordService {
     private static Function<AccessRecord, Long> groupAccessRecords(Instant now) {
         return record -> {
             long secondsAgo = now.toEpochMilli() - record.getCreatedAt().toEpochMilli();
-            long group = secondsAgo / (FETCH_INTERVAL * 1000);
-            return group;
+            return secondsAgo / (FETCH_INTERVAL * 1000);
         };
     }
 }
