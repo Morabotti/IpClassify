@@ -1,20 +1,12 @@
 import { accessApi } from '@client';
 import { CenterMessage, Text } from '@components/common';
-import { AppTable, AppTableHeader } from '@components/ui/Table';
-import { Client, TrafficLevel } from '@enums';
+import { AppTable, AppTableHeader } from '@components/ui/table';
+import { Client } from '@enums';
 import { ErrorOutline, WarningAmberOutlined } from '@mui/icons-material';
-import { Box, Paper, Skeleton, TableCell, TableRow, TypographyOwnProps } from '@mui/material';
+import { Box, Paper, Skeleton, TableCell, TableRow } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { AccessSummary, AggregationQuery, CommonQuery, DateQuery } from '@types';
-
-const getColor = (level: TrafficLevel): TypographyOwnProps['color'] => {
-  switch (level) {
-    case TrafficLevel.DANGER: return 'error';
-    case TrafficLevel.NORMAL: return 'textPrimary';
-    case TrafficLevel.WARNING: return 'warning';
-    default: return 'textPrimary';
-  }
-};
+import { getTextColor } from '@utils/uiUtils';
 
 interface Props {
   aggregation: AggregationQuery;
@@ -98,7 +90,7 @@ export const AggregationSummary = ({
             key={row.label}
           >
             <TableCell>
-              <Text color={displayLevels ? getColor(row.level) : 'textPrimary'}>
+              <Text color={displayLevels ? getTextColor(row.level) : 'textPrimary'}>
                 {row.label}
               </Text>
             </TableCell>

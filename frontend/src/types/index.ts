@@ -56,9 +56,43 @@ export interface AccessRecord {
   isHosting: boolean;
   danger: boolean;
   warning: boolean;
-  createdAt: string;
-  processedAt: string;
-  uploadedAt: string;
+  createdAt: number;
+  processedAt: number;
+  uploadedAt: number;
+}
+
+export interface IpClassification {
+  ip: string;
+  isDanger: boolean;
+  isWarning: boolean;
+}
+
+export interface IpLocation {
+  ip: string;
+  continent: string;
+  continentCode: string;
+  country: string;
+  region: string;
+  regionName: string;
+  zip: string;
+  city: string;
+  latitude: number;
+  longitude: number;
+  timezone: string;
+  currency: string;
+  isp: string;
+  org: string;
+  isMobile: boolean;
+  isProxy: boolean;
+  isHosting: boolean;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface IpInformation {
+  ip: string;
+  classification: IpClassification;
+  location: IpLocation;
 }
 
 export interface AccessSummary {
@@ -82,3 +116,10 @@ export interface MockTrafficRequest {
   amount: number;
   from: string | null;
 };
+
+export interface IpClassifyRequest {
+  ip: string;
+  id: string | null;
+  level: TrafficLevel;
+  updateHistory: boolean;
+}

@@ -1,6 +1,6 @@
 import { Box, Paper } from '@mui/material';
 import { createSx } from '@theme';
-import { ActiveAccessRecordChart, AggregationSummaryList, TrafficActions } from '@components/home';
+import { ActiveAccessRecordChart, AggregationSummaryList, LatestRequestList, TrafficActions } from '@components/home';
 
 const sx = createSx({
   layout: {
@@ -20,7 +20,8 @@ const sx = createSx({
   primaryArea: {
     display: 'grid',
     gridTemplateRows: '300px 1fr',
-    gap: 2
+    gap: 2,
+    height: '100%'
   },
   actions: {
     borderTop: 'none',
@@ -39,9 +40,7 @@ export const HomeView = () => {
           <Paper variant='outlined'>
             <ActiveAccessRecordChart />
           </Paper>
-          <Paper variant='outlined'>
-            <Box>list</Box>
-          </Paper>
+          <LatestRequestList />
         </Box>
         <AggregationSummaryList />
       </Box>

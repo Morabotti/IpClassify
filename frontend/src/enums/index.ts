@@ -6,7 +6,7 @@ export enum LocalStorageKey {
 
 export enum Client {
   GetAccessRecords = 'access-records',
-  GetAccessById = 'access-records-by-id',
+  GetAccessByIp = 'access-record-information',
   GetAccessSummary = 'access-record-summary'
 }
 

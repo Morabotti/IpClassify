@@ -204,8 +204,8 @@ export const ApplicationNavigation = ({ children }: Props) => {
               <NavigationButton to='/' active={pathname === '/'}>
                 <Text fontWeight={500} variant='body2' textTransform='uppercase'>Home</Text>
               </NavigationButton>
-              <NavigationButton to='/management' active={pathname.includes('/management')}>
-                <Text fontWeight={500} variant='body2' textTransform='uppercase'>Management</Text>
+              <NavigationButton to='/catalog' active={pathname.includes('/catalog')}>
+                <Text fontWeight={500} variant='body2' textTransform='uppercase'>Catalog</Text>
               </NavigationButton>
             </Box>
             <Box display='flex' justifyContent='flex-end' sx={sx.applicationNavRight}>
@@ -221,24 +221,22 @@ export const ApplicationNavigation = ({ children }: Props) => {
             </Box>
           </Box>
         </AppBar>
-        <Box component='main' height='100%' width='100%' flex={1} position='relative' maxHeight='100vh'>
-          <Box component='main' sx={sx.main}>
-            <Box sx={sx.content}>
-              <Outlet />
-              {children}
-              {loading && (
-                <LinearProgress
-                  sx={theme => ({
-                    position: 'fixed',
-                    bottom: 0,
-                    left: 0,
-                    width: '100%',
-                    height: 3,
-                    zIndex: `calc(${theme.zIndex.appBar} + 10)`
-                  })}
-                />
-              )}
-            </Box>
+        <Box component='main' height='100%' width='100%' flex={1} position='relative' sx={sx.main}>
+          <Box sx={sx.content}>
+            <Outlet />
+            {children}
+            {loading && (
+              <LinearProgress
+                sx={theme => ({
+                  position: 'fixed',
+                  top: APP_BAR_HEIGHT,
+                  left: 0,
+                  width: '100%',
+                  height: 3,
+                  zIndex: `calc(${theme.zIndex.appBar} + 10)`
+                })}
+              />
+            )}
           </Box>
         </Box>
       </Box>

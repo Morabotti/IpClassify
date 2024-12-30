@@ -2,13 +2,13 @@ import { useMemo } from 'react';
 import { HeadCell, TableOrder, CustomCell } from '@types';
 import { KeyboardArrowDown } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
-import { TableRow, TableCell, TableSortLabel, Checkbox, Box, Tooltip } from '@mui/material';
+import { TableRow, TableCell, TableSortLabel, Checkbox, Box, Tooltip, tableSortLabelClasses } from '@mui/material';
 import { MaterialSxProps, createSx, gray } from '@theme';
 
 const sx = createSx({
   tr: {
     '& > th': {
-      px: 1.5,
+      px: 2,
       borderRight: 'unset'
     }
   },
@@ -20,6 +20,15 @@ const sx = createSx({
   },
   checkbox: {
     p: 0.75
+  },
+  sortLabel: {
+    color: 'text.secondary',
+    fontWeight: 600,
+    '&:hover': { color: 'text.primary' },
+    [`&.${tableSortLabelClasses.active}`]: {
+      color: 'text.secondary',
+      '&:hover': { color: 'text.primary' }
+    }
   }
 });
 
@@ -30,7 +39,6 @@ interface Props<T> {
   loading?: boolean;
   disableSorting?: boolean;
   numSelected?: number;
-  standalone?: boolean;
   rowCount?: number;
   showCheckbox?: boolean;
   showActions?: boolean;
@@ -116,11 +124,7 @@ export function AppTableHeader<T>({
                 onClick={sortHandler(headCell.id)}
                 disabled={loading}
                 IconComponent={KeyboardArrowDown}
-                sx={{
-                  color: 'text.primary',
-                  '&:hover': { color: 'text.primary' },
-                  fontWeight: 600
-                }}
+                sx={sx.sortLabel}
               >
                 {headCell.label}
                 {orderBy === headCell.id ? (

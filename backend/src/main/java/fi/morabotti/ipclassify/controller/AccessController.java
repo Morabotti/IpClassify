@@ -2,7 +2,9 @@ package fi.morabotti.ipclassify.controller;
 
 import fi.morabotti.ipclassify.domain.AccessRecord;
 import fi.morabotti.ipclassify.dto.AccessSummary;
+import fi.morabotti.ipclassify.dto.IpInformation;
 import fi.morabotti.ipclassify.dto.common.Pagination;
+import fi.morabotti.ipclassify.dto.query.AccessRecordQuery;
 import fi.morabotti.ipclassify.dto.query.AggregationQuery;
 import fi.morabotti.ipclassify.dto.query.CommonQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
@@ -29,14 +31,15 @@ public class AccessController {
     public Mono<Pagination<AccessRecord>> get(
             @ModelAttribute PaginationQuery pagination,
             @ModelAttribute SortQuery sort,
-            @ModelAttribute DateQuery date
+            @ModelAttribute DateQuery date,
+            @ModelAttribute AccessRecordQuery query
     ){
-        return accessRecordService.getPagination(pagination, sort, date);
+        return accessRecordService.getPagination(pagination, sort, date, query);
     }
 
-    @GetMapping("/{id}")
-    public Mono<AccessRecord> get(@PathVariable("id") String id){
-        return accessRecordService.getById(id);
+    @GetMapping("/{ip}")
+    public Mono<IpInformation> get(@PathVariable("ip") String ip){
+        return accessRecordService.getInformationByIp(ip);
     }
 
     @GetMapping("/summary")

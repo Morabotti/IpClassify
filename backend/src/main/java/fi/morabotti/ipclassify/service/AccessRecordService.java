@@ -2,9 +2,11 @@ package fi.morabotti.ipclassify.service;
 
 import fi.morabotti.ipclassify.domain.AccessRecord;
 import fi.morabotti.ipclassify.dto.AccessSummary;
+import fi.morabotti.ipclassify.dto.IpInformation;
 import fi.morabotti.ipclassify.dto.TrafficLevel;
 import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.common.Pagination;
+import fi.morabotti.ipclassify.dto.query.AccessRecordQuery;
 import fi.morabotti.ipclassify.dto.query.AggregationQuery;
 import fi.morabotti.ipclassify.dto.query.CommonQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
@@ -30,6 +32,7 @@ public class AccessRecordService {
     private final CustomAccessRecordRepository customAccessRecordRepository;
     private final AccessRecordRepository accessRecordRepository;
     private final IpClassificationService ipClassificationService;
+    private final IpLocationService ipLocationService;
 
     public static final Long FETCH_INTERVAL = 1L;
     public static final Long HISTORY_SIZE = 60L;
@@ -37,13 +40,27 @@ public class AccessRecordService {
     public Mono<Pagination<AccessRecord>> getPagination(
             PaginationQuery pagination,
             SortQuery sort,
-            DateQuery dateQuery
+            DateQuery date,
+            AccessRecordQuery query
     ) {
         return customAccessRecordRepository.getPaginated(
                 QueryUtility.toPageable(pagination, sort),
-                dateQuery
+                date,
+                query
         );
     };
+
+    public Mono<IpInformation> getInformationByIp(String ip) {
+        return Mono.zip(
+                ipClassificationService.getIpClassification(ip),
+                ipLocationService.getLocationRecord(ip)
+        )
+                .flatMap(tuple -> Mono.just(IpInformation.builder()
+                        .ip(ip)
+                        .classification(tuple.getT1())
+                        .location(tuple.getT2())
+                        .build()));
+    }
 
     public Mono<AccessRecord> getById(String id) {
         return accessRecordRepository.findById(id);

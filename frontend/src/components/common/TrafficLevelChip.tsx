@@ -1,11 +1,11 @@
 import { TrafficLevel } from '@enums';
 import { Chip, ChipOwnProps } from '@mui/material';
 
-const getLabel = (level: TrafficLevel | null): React.ReactNode => {
+const getLabel = (level: TrafficLevel | null, isShort?: boolean): React.ReactNode => {
   switch (level) {
-    case TrafficLevel.DANGER: return 'ERROR';
-    case TrafficLevel.WARNING: return 'WARNING';
-    case TrafficLevel.NORMAL: return 'NORMAL';
+    case TrafficLevel.DANGER: return isShort ? 'E' : 'ERROR';
+    case TrafficLevel.WARNING: return isShort ? 'W' : 'WARNING';
+    case TrafficLevel.NORMAL: return isShort ? 'N' : 'NORMAL';
     default: return 'ALL';
   }
 };
@@ -22,12 +22,13 @@ const getColor = (level: TrafficLevel | null): ChipOwnProps['color'] => {
 interface Props {
   level: TrafficLevel | null;
   size?: 'small' | 'medium';
+  short?: boolean;
 }
 
-export const TrafficLevelChip = ({ level, size }: Props) => {
+export const TrafficLevelChip = ({ level, size, short }: Props) => {
   return (
     <Chip
-      label={getLabel(level)}
+      label={getLabel(level, short)}
       color={getColor(level)}
       size={size}
     />

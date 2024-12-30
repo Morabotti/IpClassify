@@ -25,3 +25,11 @@ export interface AggregationQuery {
 export interface CommonQuery {
   level?: TrafficLevel | null;
 }
+
+export interface AccessRecordQuery {
+  level?: TrafficLevel | null;
+  ip?: string | null;
+  city?: string | null;
+  zip?: string | null;
+  country?: string | null;
+}

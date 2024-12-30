@@ -69,6 +69,7 @@ export default [
       '@stylistic/jsx-quotes': [1, 'prefer-single'],
       '@stylistic/multiline-ternary': 0,
       '@stylistic/arrow-parens': 0,
+      '@stylistic/jsx-one-expression-per-line': [1, { allow: 'single-line' }],
       '@stylistic/quote-props': ['error', 'as-needed']
     }
   }

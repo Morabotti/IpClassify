@@ -14,7 +14,7 @@ interface PaginationContext {
 
 export const usePagination = ({
   defaultRows = (defaultPagination.rows ?? 50),
-  defaultPage = (defaultPagination.page ?? 1),
+  defaultPage = (defaultPagination.page ?? 0),
   defaultPageKey = QueryParams.Page,
   defaultRowsKey = QueryParams.Rows
 }: PaginationOptions = {}): PaginationContext => {

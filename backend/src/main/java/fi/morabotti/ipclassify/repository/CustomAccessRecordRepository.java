@@ -5,6 +5,7 @@ import fi.morabotti.ipclassify.domain.AccessRecord;
 import fi.morabotti.ipclassify.dto.AccessSummary;
 import fi.morabotti.ipclassify.dto.TrafficLevel;
 import fi.morabotti.ipclassify.dto.common.Pagination;
+import fi.morabotti.ipclassify.dto.query.AccessRecordQuery;
 import fi.morabotti.ipclassify.dto.query.AggregationQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.util.AggregationUtility;
@@ -31,9 +32,16 @@ import java.util.List;
 public class CustomAccessRecordRepository {
     private final ReactiveSearchOperations reactiveSearchOperations;
 
-    public Mono<Pagination<AccessRecord>> getPaginated(Pageable pageable, DateQuery dateQuery) {
+    public Mono<Pagination<AccessRecord>> getPaginated(
+            Pageable pageable,
+            DateQuery dateQuery,
+            AccessRecordQuery query
+    ) {
+        CriteriaQuery criteriaQuery = new CriteriaQuery(QueryUtility.toCriteria("createdAt", dateQuery));
+        QueryUtility.applyToQuery(criteriaQuery, QueryUtility.toCriteriaChain(query));
+
         NativeQueryBuilder queryBuilder = NativeQuery.builder()
-                .withQuery(new CriteriaQuery(QueryUtility.toCriteria("createdAt", dateQuery)));
+                .withQuery(criteriaQuery);
 
         NativeQuery withPaging = queryBuilder
                 .withPageable(pageable)

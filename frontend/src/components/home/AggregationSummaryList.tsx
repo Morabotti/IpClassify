@@ -8,6 +8,7 @@ import { DateRangeWindow, Text, TrafficLevelChip } from '@components/common';
 import { DateRange, Tag } from '@mui/icons-material';
 import { trafficLevels } from '@constants';
 import { TrafficLevel } from '@enums';
+import { useNavigate } from 'react-router';
 
 const sx = createSx({
   list: {
@@ -22,6 +23,7 @@ export const AggregationSummaryList = () => {
   const [selectingDate, setSelectingDate] = useState<HTMLDivElement | null>(null);
   const [selectingLevel, setSelectingLevel] = useState<HTMLDivElement | null>(null);
   const [width, setWidth] = useState<null | number>(null);
+  const navigate = useNavigate();
 
   const [dateQueryState, setDateQuery] = useState<DateQueryWithLabel>({
     label: 'Last 1 month',
@@ -85,7 +87,7 @@ export const AggregationSummaryList = () => {
         aggregation={{ field: 'ip', count: 5 }}
         common={commonQuery}
         date={dateQuery}
-        onClick={data => console.log(data)}
+        onClick={data => navigate(`/catalog/${data.label}`)}
         label='Most common IPs'
         errorMessage='Unable to fetch most common IPs'
         emptyMessage={`No IP's found within given filters.`}
@@ -95,6 +97,7 @@ export const AggregationSummaryList = () => {
         aggregation={{ field: 'country', count: 5 }}
         common={commonQuery}
         date={dateQuery}
+        onClick={data => console.log(data)}
         label='Most common countries'
         errorMessage='Unable to fetch most common countries'
         emptyMessage='No countries found within given filters.'
@@ -103,6 +106,7 @@ export const AggregationSummaryList = () => {
         aggregation={{ field: 'application', count: 5 }}
         common={commonQuery}
         date={dateQuery}
+        onClick={data => console.log(data)}
         label='Most common application'
         errorMessage='Unable to fetch most common application'
         emptyMessage='No application found within given filters.'

@@ -1,7 +1,7 @@
 package fi.morabotti.ipclassify.util;
 
 import fi.morabotti.ipclassify.dto.TrafficLevel;
-import fi.morabotti.ipclassify.dto.TrafficSummary;
+import fi.morabotti.ipclassify.dto.query.AccessRecordQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.dto.query.PaginationQuery;
 import fi.morabotti.ipclassify.dto.query.SortQuery;
@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
 public class QueryUtility {
     public static Pageable toPageable(
@@ -31,6 +32,42 @@ public class QueryUtility {
 
         return PageRequest.of(page, size, Sort.by(direction, sort.getSort()));
     }
+
+    public static Criteria.CriteriaChain toCriteriaChain(AccessRecordQuery query) {
+        Criteria.CriteriaChain chain = new Criteria.CriteriaChain();
+
+        if (query.getLevel() != null) {
+            chain.add(toCriteria(query.getLevel()));
+        }
+
+        if (query.getIp() != null) {
+            chain.add(Criteria.where("ip").is(query.getIp()));
+        }
+
+        if (query.getZip() != null) {
+            chain.add(Criteria.where("zip").is(query.getZip()));
+        }
+
+        if (query.getCountry() != null) {
+            chain.add(Criteria.where("country").is(query.getCountry()));
+        }
+
+        if (query.getCity() != null) {
+            chain.add(Criteria.where("city").is(query.getCity()));
+        }
+
+        if (query.getApplication() != null) {
+            chain.add(Criteria.where("application").is(query.getApplication()));
+        }
+
+        return chain;
+   }
+
+   public static void applyToQuery(CriteriaQuery query, Criteria.CriteriaChain criteriaChain) {
+        for (Criteria criteria : criteriaChain) {
+            query.addCriteria(criteria);
+        }
+   }
 
     public static Criteria toCriteria(String key, DateQuery dateQuery) {
         Criteria criteria = Criteria.where(key);

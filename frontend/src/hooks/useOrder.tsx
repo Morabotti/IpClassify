@@ -26,13 +26,13 @@ export function useOrder<T>(
   });
 
   const [orderBy, setOrderBy] = useState<keyof T>(query.orderBy as keyof T);
-  const [order, setOrder] = useState<TableOrder>((query.order === 'asc' || query.order === 'desc')
+  const [order, setOrder] = useState<TableOrder>((query.order === 'ASC' || query.order === 'DESC')
     ? query.order as TableOrder
-    : defaultOrder ?? 'asc'
+    : defaultOrder ?? 'ASC'
   );
 
   const onSort = useCallback((e: React.MouseEvent<unknown>, property: keyof T) => {
-    const newOrder = orderBy === property ? order === 'desc' ? 'asc' : 'desc' : 'desc';
+    const newOrder = orderBy === property ? order === 'DESC' ? 'ASC' : 'DESC' : 'DESC';
 
     setOrder(newOrder);
     setOrderBy(property);
@@ -63,11 +63,11 @@ export function useOrder<T>(
   const sorter = useCallback((a: T, b: T): number => {
     if (typeof a[orderBy] === 'number' || typeof b[orderBy] === 'number') {
       return a[orderBy] > b[orderBy]
-        ? (order === 'asc' ? 1 : -1)
-        : (order === 'asc' ? -1 : 1);
+        ? (order === 'ASC' ? 1 : -1)
+        : (order === 'ASC' ? -1 : 1);
     }
 
-    return order === 'asc'
+    return order === 'ASC'
       ? String(a[orderBy]).localeCompare(String(b[orderBy]))
       : String(b[orderBy]).localeCompare(String(a[orderBy]));
   }, [orderBy, order]);

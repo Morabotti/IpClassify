@@ -4,10 +4,11 @@ import { BrowserRouter, Route, Routes } from 'react-router';
 import { AuthLayer } from '@components/auth';
 import { ApplicationNavigation } from '@components/common';
 import { HomeView } from '@components/home';
-import { ManagementView } from '@components/management';
+import { CatalogView } from '@components/catalog';
 import { DoNotDisturb } from '@mui/icons-material';
 import { WebSocketProvider } from '@contexts/WebSocketContext';
 import { LoginView } from '@components/auth';
+import { DetailsView } from '@components/details';
 
 const Application = () => (
   <ApplicationProviders>
@@ -25,7 +26,8 @@ const Application = () => (
             )}
           >
             <Route index element={<HomeView />} />
-            <Route path='management' element={<ManagementView />} />
+            <Route path='catalog' element={<CatalogView />} />
+            <Route path='catalog/:id' element={<DetailsView />} />
           </Route>
           <Route path='/login' element={<LoginView />} />
           <Route path='*' element={<CenterMessage icon={DoNotDisturb} text='PAGE NOT FOUND' title='404' />} />
