@@ -1,5 +1,5 @@
 import { trafficSummaryAtom } from '@atoms';
-import { Box, Checkbox, FormControlLabel, Skeleton, Switch } from '@mui/material';
+import { Box, FormControlLabel, Skeleton, Switch } from '@mui/material';
 import dayjs from 'dayjs';
 import { useAtomValue } from 'jotai';
 import { useState } from 'react';
