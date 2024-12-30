@@ -70,3 +70,15 @@ export interface AccessSummary {
 export interface DateQueryWithLabel extends DateQuery {
   label: string | null;
 };
+
+export interface MockTrafficRequestState {
+  onlyKnown: boolean;
+  from: string | null;
+  customAmount: number;
+};
+
+export interface MockTrafficRequest {
+  onlyKnown: boolean;
+  amount: number;
+  from: string | null;
+};

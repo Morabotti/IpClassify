@@ -1,11 +1,20 @@
 import { accessApi } from '@client';
-import { CenterMessage } from '@components/common';
+import { CenterMessage, Text } from '@components/common';
 import { AppTable, AppTableHeader } from '@components/ui/Table';
-import { Client } from '@enums';
+import { Client, TrafficLevel } from '@enums';
 import { ErrorOutline, WarningAmberOutlined } from '@mui/icons-material';
-import { Box, Paper, Skeleton, TableCell, TableRow } from '@mui/material';
+import { Box, Paper, Skeleton, TableCell, TableRow, TypographyOwnProps } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { AccessSummary, AggregationQuery, CommonQuery, DateQuery } from '@types';
+
+const getColor = (level: TrafficLevel): TypographyOwnProps['color'] => {
+  switch (level) {
+    case TrafficLevel.DANGER: return 'error';
+    case TrafficLevel.NORMAL: return 'textPrimary';
+    case TrafficLevel.WARNING: return 'warning';
+    default: return 'textPrimary';
+  }
+};
 
 interface Props {
   aggregation: AggregationQuery;
@@ -14,6 +23,7 @@ interface Props {
   label: string;
   errorMessage: string;
   emptyMessage: string;
+  displayLevels?: boolean;
   onClick?: (set: AccessSummary) => void;
 }
 
@@ -23,6 +33,7 @@ export const AggregationSummary = ({
   common,
   label,
   onClick,
+  displayLevels,
   errorMessage,
   emptyMessage
 }: Props) => {
@@ -86,7 +97,11 @@ export const AggregationSummary = ({
             onClick={onClick ? () => onClick?.(row) : undefined}
             key={row.label}
           >
-            <TableCell>{row.label}</TableCell>
+            <TableCell>
+              <Text color={displayLevels ? getColor(row.level) : 'textPrimary'}>
+                {row.label}
+              </Text>
+            </TableCell>
             <TableCell align='right'>{row.count}</TableCell>
           </TableRow>
         ))}

@@ -1,5 +1,5 @@
 import { TrafficLevel } from '@enums';
-import { Chip } from '@mui/material';
+import { Chip, ChipOwnProps } from '@mui/material';
 
 const getLabel = (level: TrafficLevel | null): React.ReactNode => {
   switch (level) {
@@ -10,9 +10,7 @@ const getLabel = (level: TrafficLevel | null): React.ReactNode => {
   }
 };
 
-const getColor = (
-  level: TrafficLevel | null
-): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
+const getColor = (level: TrafficLevel | null): ChipOwnProps['color'] => {
   switch (level) {
     case TrafficLevel.DANGER: return 'error';
     case TrafficLevel.WARNING: return 'warning';

@@ -1,4 +1,4 @@
-import { Chip, CircularProgress, colors, Tooltip } from '@mui/material';
+import { Chip, ChipOwnProps, CircularProgress, colors, Tooltip } from '@mui/material';
 import { MaterialSxProps } from '@theme';
 import { useWebSocket } from '@hooks';
 import { WebSocketState } from '@types';
@@ -38,7 +38,7 @@ const getContent = (state: WebSocketState): React.ReactNode => {
   }
 };
 
-const getColor = (state: WebSocketState): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
+const getColor = (state: WebSocketState): ChipOwnProps['color'] => {
   switch (state) {
     case 'closed': return 'warning';
     case 'error': return 'error';

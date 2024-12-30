@@ -4,6 +4,7 @@ import fi.morabotti.ipclassify.domain.RequestMessage;
 import fi.morabotti.ipclassify.dto.MockTrafficRequest;
 import fi.morabotti.ipclassify.service.producer.RequestMessageProducer;
 import fi.morabotti.ipclassify.util.IpUtility;
+import fi.morabotti.ipclassify.util.MockUtility;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Service;
@@ -13,8 +14,10 @@ import reactor.core.publisher.Mono;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +25,7 @@ public class AccessLogService {
     private static final String APPLICATION_NAME = "IpClassify";
 
     private final AuthenticationService authenticationService;
+    private final AccessRecordService accessRecordService;
     private final RequestMessageProducer producer;
     private final IpUtility ipUtility;
 
@@ -32,8 +36,52 @@ public class AccessLogService {
                         .thenReturn(message));
     }
 
-    public Flux<RequestMessage> log(MockTrafficRequest request) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public Mono<Boolean> log(MockTrafficRequest request) {
+        if (request.getFrom() != null) {
+            return producer.sendAll(createAll(List.of(request.getFrom()), request.getAmount()))
+                    .then()
+                    .thenReturn(true)
+                    .onErrorReturn(false);
+        }
+
+        return (request.getOnlyKnown()
+                ? accessRecordService.getUniqueIps()
+                : Flux.fromIterable(MockUtility.generateRandomIps(request.getAmount()))
+        )
+                .collectList()
+                .flatMapMany(i -> createAll(i, request.getAmount()))
+                .flatMap(producer::send)
+                .then()
+                .thenReturn(true)
+                .onErrorReturn(false);
+    }
+
+    private Flux<RequestMessage> createAll(List<String> ips, Long amount) {
+        if (ips.isEmpty() || amount <= 0) {
+            return Flux.empty();
+        }
+
+        List<String> randomIps = ThreadLocalRandom.current()
+                .ints(0, ips.size())
+                .limit(amount)
+                .mapToObj(ips::get)
+                .toList();
+
+        return Flux.fromIterable(randomIps)
+                .map(ip -> RequestMessage.builder()
+                        .uuid(UUID.randomUUID())
+                        .ip(ip)
+                        .application(MockUtility.getRandomApplication())
+                        .referrer(MockUtility.getRandomReferrer())
+                        .path("/")
+                        .method("GET")
+                        .userId(null)
+                        .language("unknown")
+                        .requestId("unknown")
+                        .userAgent(MockUtility.getRandomUserAgent())
+                        .createdAt(Instant.now())
+                        .build());
+
     }
 
     private RequestMessage create(ServerHttpRequest request, Long userId) {

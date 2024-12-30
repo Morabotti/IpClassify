@@ -399,6 +399,9 @@ export const inputCustomizations: Components<Theme> = {
           outline: `3px solid ${alpha(brand[500], 0.5)}`,
           borderColor: brand[400]
         },
+        [`&.${outlinedInputClasses.disabled}`]: {
+          borderColor: gray[200]
+        },
         ...theme.applyStyles('dark', {
           '&:hover': {
             borderColor: gray[500]

@@ -1,3 +1,5 @@
+import { Dayjs } from 'dayjs';
+
 export type TableAlign = 'inherit' | 'left' | 'center' | 'right' | 'justify';
 
 export interface ContextMenu {
@@ -54,4 +56,16 @@ export interface Pagination<T> {
 export interface PaginationMemory {
   page: number;
   rows: number;
+}
+
+export interface DateField {
+  label: string;
+  after: number;
+  before: number;
+}
+
+export interface DateRangeState {
+  after: Dayjs | null;
+  before: Dayjs | null;
+  label: string;
 }

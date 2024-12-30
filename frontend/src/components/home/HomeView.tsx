@@ -1,6 +1,6 @@
 import { Box, Paper } from '@mui/material';
 import { createSx } from '@theme';
-import { ActiveAccessRecordChart, AggregationSummaryList } from '@components/home';
+import { ActiveAccessRecordChart, AggregationSummaryList, TrafficActions } from '@components/home';
 
 const sx = createSx({
   layout: {
@@ -32,7 +32,7 @@ export const HomeView = () => {
   return (
     <Box sx={sx.layout}>
       <Paper square variant='outlined' sx={sx.actions}>
-        <Box>action</Box>
+        <TrafficActions />
       </Paper>
       <Box sx={sx.grid}>
         <Box sx={sx.primaryArea}>

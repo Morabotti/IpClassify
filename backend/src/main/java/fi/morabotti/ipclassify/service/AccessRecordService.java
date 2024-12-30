@@ -88,7 +88,7 @@ public class AccessRecordService {
         return customAccessRecordRepository.getRecordsFromLastSeconds(size * FETCH_INTERVAL)
                 .groupBy(groupAccessRecords(now))
                 .flatMap(group -> group.collectList()
-                        .map(records -> Map.entry(group.key(), records)))
+                        .map(records -> Map.entry(group.key(), records)), 10)
                 .collectMap(Map.Entry::getKey, Map.Entry::getValue)
                 .flatMapMany(map -> Flux.fromIterable(allIntervals)
                         .map(i -> {
@@ -105,10 +105,21 @@ public class AccessRecordService {
                 );
     }
 
+    public Flux<String> getUniqueIps() {
+        return customAccessRecordRepository.getMostCommonAggregatedBy(
+                new DateQuery(),
+                new AggregationQuery("ip", 100000),
+                null
+        )
+                .map(AccessSummary::getLabel);
+    }
+
     private static Function<AccessRecord, Long> groupAccessRecords(Instant now) {
         return record -> {
-            long secondsAgo = now.toEpochMilli() - record.getCreatedAt().toEpochMilli();
-            return secondsAgo / (FETCH_INTERVAL * 1000);
+            long secondsAgo = (now.toEpochMilli() - record.getCreatedAt().toEpochMilli()) / 1000;
+            return secondsAgo / FETCH_INTERVAL;
+            // long secondsAgo = now.toEpochMilli() - record.getCreatedAt().toEpochMilli();
+            // return secondsAgo / (FETCH_INTERVAL * 1000);
         };
     }
 }

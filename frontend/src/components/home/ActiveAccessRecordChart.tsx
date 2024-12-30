@@ -19,7 +19,7 @@ export const ActiveAccessRecordChart = () => {
     <ResponsiveContainer height={300} width='100%'>
       <AreaChart
         data={trafficSummary}
-        margin={{ top: 20, right: 30, left: -25, bottom: 0 }}
+        margin={{ top: 20, right: 30, left: -20, bottom: 0 }}
       >
         <defs>
           <linearGradient id='colorNormal' x1='0' y1='0' x2='0' y2='1'>

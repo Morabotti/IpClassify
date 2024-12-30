@@ -1,4 +1,4 @@
-import { AccessRecord, AccessSummary, AggregationQuery, AuthResponse, CommonQuery, DateQuery, LoginRequest, Pagination, PaginationQuery, SortQuery } from '@types';
+import { AccessRecord, AccessSummary, AggregationQuery, AuthResponse, CommonQuery, DateQuery, LoginRequest, MockTrafficRequest, Pagination, PaginationQuery, SortQuery } from '@types';
 import { createClient } from './clientUtils';
 
 export { setAuthToken, clearAuthToken } from './clientUtils';
@@ -16,4 +16,8 @@ export const accessApi = {
   getAll: (p: PaginationQuery, s: SortQuery, d: DateQuery) => query<Pagination<AccessRecord>>(`/access`, 'GET', { params: [p, s, d] }),
   getById: (id: string) => query<AccessRecord>(`/access/${id}`),
   getSummary: (d: DateQuery, a: AggregationQuery, c: CommonQuery) => query<AccessSummary[]>(`/access/summary`, 'GET', { params: [d, a, c] })
+};
+
+export const trafficApi = {
+  create: (body: MockTrafficRequest) => query<Response>(`/traffic`, 'POST', { body, skipJson: true })
 };

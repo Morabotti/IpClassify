@@ -1,16 +1,15 @@
-import { Stack, Paper, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Chip } from '@mui/material';
+import { useMemo, useState } from 'react';
+import { Stack, Paper, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Chip, Menu, MenuItem, Grow } from '@mui/material';
 import { createSx } from '@theme';
 import { AggregationSummary } from '@components/home';
 import dayjs from 'dayjs';
-import { useState } from 'react';
-import { CommonQuery, DateQueryWithLabel } from '@types';
-import { Text, TrafficLevelChip } from '@components/common';
+import { CommonQuery, DateQuery, DateQueryWithLabel } from '@types';
+import { DateRangeWindow, Text, TrafficLevelChip } from '@components/common';
 import { DateRange, Tag } from '@mui/icons-material';
+import { trafficLevels } from '@constants';
+import { TrafficLevel } from '@enums';
 
 const sx = createSx({
-  paper: {
-
-  },
   list: {
     pb: 0
   },
@@ -20,32 +19,59 @@ const sx = createSx({
 });
 
 export const AggregationSummaryList = () => {
-  const [dateQuery] = useState<DateQueryWithLabel>({
-    label: 'Last month',
+  const [selectingDate, setSelectingDate] = useState<HTMLDivElement | null>(null);
+  const [selectingLevel, setSelectingLevel] = useState<HTMLDivElement | null>(null);
+  const [width, setWidth] = useState<null | number>(null);
+
+  const [dateQueryState, setDateQuery] = useState<DateQueryWithLabel>({
+    label: 'Last 1 month',
     before: dayjs().valueOf(),
     after: dayjs().subtract(1, 'month').valueOf()
   });
 
-  const [commonQuery] = useState<CommonQuery>({
+  const dateQuery = useMemo<DateQuery>(() => ({
+    before: dateQueryState.before,
+    after: dateQueryState.after
+  }), [dateQueryState]);
+
+  const [commonQuery, setCommonQuery] = useState<CommonQuery>({
     level: null
   });
 
+  const onChangeDateQuery = (set: DateQueryWithLabel | null) => {
+    setSelectingDate(null);
+
+    if (set !== null) {
+      setDateQuery(set);
+    }
+  };
+
+  const onChangeLevel = (level: TrafficLevel | null) => {
+    setCommonQuery(prev => ({ ...prev, level }));
+    setSelectingLevel(null);
+  };
+
+  const onOpenLevel = (e: React.MouseEvent<HTMLDivElement>) => {
+    setWidth(e.currentTarget.clientWidth);
+    setSelectingLevel(e.currentTarget);
+  };
+
   return (
     <Stack gap={2}>
-      <Paper variant='outlined' sx={sx.paper}>
-        <Text variant='h4' component='h2' color='info' align='center'>Summary Options</Text>
+      <Paper variant='outlined'>
+        <Text variant='h4' mt={0.5} component='h2' color='info' align='center'>Summary Options</Text>
         <List sx={sx.list}>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton onClick={e => setSelectingDate(e.currentTarget)}>
               <ListItemIcon sx={sx.listIcon}>
                 <DateRange />
               </ListItemIcon>
               <ListItemText primary='Date Range' />
-              <Chip label={dateQuery.label} color='primary' size='small' />
+              <Chip label={dateQueryState.label} color='primary' size='small' />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
-            <ListItemButton>
+            <ListItemButton onClick={onOpenLevel}>
               <ListItemIcon sx={sx.listIcon}>
                 <Tag />
               </ListItemIcon>
@@ -63,6 +89,7 @@ export const AggregationSummaryList = () => {
         label='Most common IPs'
         errorMessage='Unable to fetch most common IPs'
         emptyMessage={`No IP's found within given filters.`}
+        displayLevels
       />
       <AggregationSummary
         aggregation={{ field: 'country', count: 5 }}
@@ -79,6 +106,33 @@ export const AggregationSummaryList = () => {
         label='Most common application'
         errorMessage='Unable to fetch most common application'
         emptyMessage='No application found within given filters.'
+      />
+      <Menu
+        anchorEl={selectingLevel}
+        open={!!selectingLevel}
+        onClose={() => setSelectingLevel(null)}
+        style={{ width: '100%' }}
+        TransitionComponent={Grow}
+        TransitionProps={{ timeout: 150 }}
+      >
+        {trafficLevels.map(option => (
+          <MenuItem
+            key={option.label}
+            onClick={() => onChangeLevel(option.value)}
+            selected={option.value === commonQuery.level}
+            style={{ width: width ?? 'unset' }}
+          >
+            <ListItemText>{option.label}</ListItemText>
+            <TrafficLevelChip level={option.value} size='small' />
+          </MenuItem>
+        ))}
+      </Menu>
+      <DateRangeWindow
+        element={selectingDate}
+        baseValues={dateQueryState}
+        onChange={onChangeDateQuery}
+        open={!!selectingDate}
+        onClose={() => setSelectingDate(null)}
       />
     </Stack>
   );

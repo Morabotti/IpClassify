@@ -2,8 +2,8 @@ import { useMemo } from 'react';
 import { HeadCell, TableOrder, CustomCell } from '@types';
 import { KeyboardArrowDown } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
-import { TableRow, TableCell, TableSortLabel, Checkbox, Box, colors, Tooltip } from '@mui/material';
-import { MaterialSxProps, createSx } from '@theme';
+import { TableRow, TableCell, TableSortLabel, Checkbox, Box, Tooltip } from '@mui/material';
+import { MaterialSxProps, createSx, gray } from '@theme';
 
 const sx = createSx({
   tr: {
@@ -15,7 +15,8 @@ const sx = createSx({
   bg: {
     fontWeight: 600,
     color: theme => theme.palette.text.secondary,
-    backgroundColor: colors.blueGrey[100]
+    backgroundColor: gray[100],
+    borderColor: gray[200]
   },
   checkbox: {
     p: 0.75

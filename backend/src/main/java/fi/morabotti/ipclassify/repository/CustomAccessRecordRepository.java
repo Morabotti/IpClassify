@@ -57,6 +57,7 @@ public class CustomAccessRecordRepository {
 
         Query query = new NativeQueryBuilder()
                 .withQuery(new CriteriaQuery(Criteria.where("createdAt").greaterThanEqual(oneMinuteAgo)))
+                .withMaxResults(1000)
                 .build();
 
         return reactiveSearchOperations.search(query, AccessRecord.class)
