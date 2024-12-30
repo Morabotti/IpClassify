@@ -38,7 +38,7 @@ public class RequestMessageConsumer {
         return KafkaReceiver.create(receiverOptions.subscription(SUBSCRIPTIONS))
                 .receiveAutoAck()
                 .flatMap(Flux::collectList)
-                .flatMap(this::processBatch)
+                .flatMap(this::processBatch, 4)
                 .flatMap(batch -> accessRequestMessageProducer
                         .sendAll(Flux.fromIterable(batch))
                         .then(Mono.just(batch)))

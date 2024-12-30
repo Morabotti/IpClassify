@@ -1,13 +1,18 @@
 package fi.morabotti.ipclassify.repository;
 
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
+import co.elastic.clients.elasticsearch._types.aggregations.FieldDateMath;
+import co.elastic.clients.util.NamedValue;
 import fi.morabotti.ipclassify.domain.AccessRecord;
 import fi.morabotti.ipclassify.dto.AccessSummary;
 import fi.morabotti.ipclassify.dto.TrafficLevel;
+import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.common.Pagination;
 import fi.morabotti.ipclassify.dto.query.AccessRecordQuery;
 import fi.morabotti.ipclassify.dto.query.AggregationQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
+import fi.morabotti.ipclassify.service.AccessRecordService;
 import fi.morabotti.ipclassify.util.AggregationUtility;
 import fi.morabotti.ipclassify.util.QueryUtility;
 import lombok.RequiredArgsConstructor;
@@ -60,16 +65,62 @@ public class CustomAccessRecordRepository {
                         .build());
     }
 
-    public Flux<AccessRecord> getRecordsFromLastSeconds(Long secondsAgo) {
-        Instant oneMinuteAgo = Instant.now().minusSeconds(secondsAgo);
+    public Flux<TrafficSummary> getBackTrackedRecords(Long size) {
+        Instant now = Instant.now().minusSeconds(AccessRecordService.FETCH_INTERVAL);
+        Instant startTime = now.minusSeconds(
+                (size * AccessRecordService.FETCH_INTERVAL) - AccessRecordService.FETCH_INTERVAL
+        );
 
         Query query = new NativeQueryBuilder()
-                .withQuery(new CriteriaQuery(Criteria.where("createdAt").greaterThanEqual(oneMinuteAgo)))
-                .withMaxResults(1000)
+                .withQuery(new CriteriaQuery(
+                        Criteria.where("processedAt")
+                                .greaterThanEqual(startTime)
+                                .lessThanEqual(now))
+                )
+                .withAggregation(
+                        "time_buckets",
+                        Aggregation.of(builder -> builder
+                                .dateHistogram(d -> d
+                                        .field("createdAt")
+                                        .fixedInterval(t -> t.time(AccessRecordService.FETCH_INTERVAL + "s"))
+                                        .order(List.of(NamedValue.of("_key", SortOrder.Asc)))
+                                        .minDocCount(0)
+                                        .extendedBounds(e -> e
+                                                .min(FieldDateMath.of(f -> f.value((double)startTime.toEpochMilli())))
+                                                .max(FieldDateMath.of(f -> f.value((double)now.toEpochMilli())))
+                                        )
+                                )
+                                .aggregations("danger", Aggregation.of(sub -> sub
+                                        .filter(f -> f.term(t -> t
+                                                .field("danger")
+                                                .value(true)))))
+                                .aggregations("warning", Aggregation.of(sub -> sub
+                                        .filter(f -> f.term(t -> t
+                                                .field("warning")
+                                                .value(true)))))
+                                .aggregations("normal", Aggregation.of(sub -> sub
+                                        .filter(f -> f.bool(b -> b
+                                                .mustNot(m -> m.term(t -> t
+                                                        .field("warning")
+                                                        .value(true)))
+                                                .mustNot(m -> m.term(t -> t
+                                                        .field("danger")
+                                                        .value(true))))
+                                        ))
+                                )
+                        )
+                )
                 .build();
 
-        return reactiveSearchOperations.search(query, AccessRecord.class)
-                .map(SearchHit::getContent);
+        return reactiveSearchOperations.aggregate(query, AccessRecord.class)
+                .flatMap(AggregationUtility::formatDateHistogramAggregation)
+                .map(bucket -> TrafficSummary.builder()
+                            .time(Instant.ofEpochMilli(bucket.key()))
+                            .danger(bucket.aggregations().get("danger").filter().docCount())
+                            .warning(bucket.aggregations().get("warning").filter().docCount())
+                            .normal(bucket.aggregations().get("normal").filter().docCount())
+                            .build()
+                );
     }
 
     public Flux<AccessSummary> getMostCommonAggregatedBy(

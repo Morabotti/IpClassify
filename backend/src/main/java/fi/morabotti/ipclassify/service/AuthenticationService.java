@@ -24,6 +24,7 @@ public class AuthenticationService {
     private final SecurityOptions options;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final AccessLogService accessLogService;
 
     public Mono<AuthResponse> authenticate(LoginRequest request) {
         return Mono.just(request)
@@ -46,6 +47,8 @@ public class AuthenticationService {
     public Mono<AuthResponse> extendSession(ServerWebExchange exchange) {
         return this.getMe(exchange.getRequest())
                 .switchIfEmpty(Mono.error(new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not logged in")))
+                .flatMap(user -> accessLogService.log(exchange.getRequest(), user.getId())
+                        .thenReturn(user))
                 .map(user -> AuthResponse.builder()
                         .user(AuthUser.from(user))
                         .maxAge(options.getAccessExpiration())

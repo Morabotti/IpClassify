@@ -1,5 +1,6 @@
 package fi.morabotti.ipclassify.domain;
 
+import fi.morabotti.ipclassify.dto.TrafficLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,5 +33,24 @@ public class IpClassification {
                 .isDanger(false)
                 .isWarning(false)
                 .build();
+    }
+
+    public IpClassification update(TrafficLevel level) {
+        switch (level) {
+            case WARNING:
+                this.isWarning = true;
+                this.isDanger = false;
+                break;
+            case DANGER:
+                this.isDanger = true;
+                this.isWarning = false;
+                break;
+            default:
+                this.isDanger = false;
+                this.isWarning = false;
+                break;
+        }
+
+        return this;
     }
 }

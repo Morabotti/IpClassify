@@ -1,5 +1,6 @@
 package fi.morabotti.ipclassify.domain;
 
+import fi.morabotti.ipclassify.dto.TrafficLevel;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -96,4 +97,23 @@ public class AccessRecord {
 
     @Field(type = FieldType.Date)
     private Instant uploadedAt;
+
+    public AccessRecord update(TrafficLevel level) {
+        switch (level) {
+            case WARNING:
+                this.warning = true;
+                this.danger = false;
+                break;
+            case DANGER:
+                this.danger = true;
+                this.warning = false;
+                break;
+            default:
+                this.danger = false;
+                this.warning = false;
+                break;
+        }
+
+        return this;
+    }
 }

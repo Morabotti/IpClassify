@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Client, TrafficLevel } from '@enums';
 import { accessApi } from '@client';
 import { useOrder, usePagination, useSimpleContextMenu } from '@hooks';
-import { AccessRecord } from '@types';
+import { AccessRecord, DateQuery, IpClassifyRequest } from '@types';
 import { emptyDateQuery } from '@constants';
 import { Text } from '@components/common';
 import { ChevronRight, Refresh } from '@mui/icons-material';
@@ -16,6 +16,9 @@ import clsx from 'clsx';
 import { Link, useNavigate } from 'react-router';
 import { AccessRecordContextMenu } from '@components/ui/menu';
 import { createSearchParams } from '@utils/queryUtils';
+import { useAtom } from 'jotai';
+import { loadingAtom } from '@atoms';
+import { useState } from 'react';
 
 const sx = createSx({
   paper: {
@@ -30,15 +33,35 @@ const sx = createSx({
 });
 
 export const LatestRequestList = () => {
+  const [loading, setLoading] = useAtom(loadingAtom);
   const pagination = usePagination({ defaultPage: 0, defaultRows: 30 });
   const sort = useOrder<AccessRecord>('createdAt', false, 'DESC');
+  const [dateQuery, setDateQuery] = useState<DateQuery>({ ...emptyDateQuery, before: dayjs().valueOf() });
   const contextMenu = useSimpleContextMenu<AccessRecord>();
   const navigate = useNavigate();
 
   const response = useQuery({
-    queryKey: [Client.GetAccessRecords, pagination.toQuery, sort.toQuery, emptyDateQuery, {}],
-    queryFn: () => accessApi.getAll(pagination.toQuery, sort.toQuery, emptyDateQuery, {})
+    queryKey: [Client.GetAccessRecords, pagination.toQuery, sort.toQuery, dateQuery, {}],
+    queryFn: () => accessApi.getAll(pagination.toQuery, sort.toQuery, dateQuery, {})
   });
+
+  const onClassify = async (set: IpClassifyRequest) => {
+    setLoading(true);
+
+    try {
+      await accessApi.updateIpClassification(set);
+      response.refetch();
+    }
+    catch (e) {
+      console.error(e);
+    }
+
+    setLoading(false);
+  };
+
+  const onRefresh = () => {
+    setDateQuery({ ...emptyDateQuery, before: dayjs().valueOf() });
+  };
 
   return (
     <Paper variant='outlined' sx={sx.paper}>
@@ -48,15 +71,15 @@ export const LatestRequestList = () => {
           <Button
             variant='outlined'
             startIcon={<Refresh />}
-            onClick={() => response.refetch()}
-            disabled={response.isFetching}
+            onClick={onRefresh}
+            disabled={response.isFetching || loading}
           >
             Refresh
           </Button>
           <Button
             variant='outlined'
             endIcon={<ChevronRight />}
-            disabled={response.isFetching}
+            disabled={response.isFetching || loading}
             component={Link}
             to='/catalog'
           >
@@ -70,9 +93,6 @@ export const LatestRequestList = () => {
         stickyHeader
         head={(
           <AppTableHeader<AccessRecord>
-            order={sort.order}
-            onRequestSort={sort.onSort}
-            orderBy={sort.orderBy}
             headCells={[
               { id: 'ip', label: 'IP' },
               { id: 'createdAt', label: 'Logged at' },
@@ -134,7 +154,7 @@ export const LatestRequestList = () => {
       <AccessRecordContextMenu
         contextMenu={contextMenu.menu}
         onClose={contextMenu.onClose}
-        onClassify={() => {}}
+        onClassify={onClassify}
         onFilter={({ ip }) => navigate(`/catalog?${createSearchParams([{ ip }])}`)}
         onView={(set) => navigate(`/catalog/${set.ip}`)}
       />

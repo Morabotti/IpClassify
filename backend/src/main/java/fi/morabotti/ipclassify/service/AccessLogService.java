@@ -18,27 +18,33 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class AccessLogService {
     private static final String APPLICATION_NAME = "IpClassify";
 
-    private final AuthenticationService authenticationService;
     private final AccessRecordService accessRecordService;
     private final RequestMessageProducer producer;
     private final IpUtility ipUtility;
 
-    public Mono<RequestMessage> log(ServerHttpRequest request) {
-        return authenticationService.getMe(request)
-                .map(user -> create(request, user.getId()))
+    public Mono<RequestMessage> log(ServerHttpRequest request, Long userId) {
+        return Mono.just(create(request, userId))
                 .flatMap(message -> producer.send(message)
                         .thenReturn(message));
     }
 
     public Mono<Boolean> log(MockTrafficRequest request) {
         if (request.getFrom() != null) {
-            return producer.sendAll(createAll(List.of(request.getFrom()), request.getAmount()))
+            return producer.sendAll(
+                    createAll(
+                            Stream.of(request.getFrom().split(","))
+                                    .map(String::trim)
+                                    .toList(),
+                            request.getAmount()
+                    )
+            )
                     .then()
                     .thenReturn(true)
                     .onErrorReturn(false);
@@ -81,7 +87,6 @@ public class AccessLogService {
                         .userAgent(MockUtility.getRandomUserAgent())
                         .createdAt(Instant.now())
                         .build());
-
     }
 
     private RequestMessage create(ServerHttpRequest request, Long userId) {

@@ -20,12 +20,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.IntStream;
-
 @Service
 @AllArgsConstructor
 public class AccessRecordService {
@@ -94,32 +88,7 @@ public class AccessRecordService {
     }
 
     public Flux<TrafficSummary> getBackTrackedSummary(Long size) {
-        Instant now = Instant.now();
-
-        List<Long> allIntervals = IntStream.range(0, size.intValue())
-                .asLongStream()
-                .boxed()
-                .toList()
-                .reversed();
-
-        return customAccessRecordRepository.getRecordsFromLastSeconds(size * FETCH_INTERVAL)
-                .groupBy(groupAccessRecords(now))
-                .flatMap(group -> group.collectList()
-                        .map(records -> Map.entry(group.key(), records)), 10)
-                .collectMap(Map.Entry::getKey, Map.Entry::getValue)
-                .flatMapMany(map -> Flux.fromIterable(allIntervals)
-                        .map(i -> {
-                            List<AccessRecord> record = map.getOrDefault(i, List.of());
-                            return TrafficSummary.builder()
-                                    .time(now.minusSeconds(i * FETCH_INTERVAL))
-                                    .danger(record.stream().filter(AccessRecord::getDanger).count())
-                                    .warning(record.stream().filter(AccessRecord::getWarning).count())
-                                    .normal(record.stream()
-                                            .filter(r -> !r.getWarning() && !r.getDanger())
-                                            .count())
-                                    .build();
-                        })
-                );
+        return customAccessRecordRepository.getBackTrackedRecords(size);
     }
 
     public Flux<String> getUniqueIps() {
@@ -129,14 +98,5 @@ public class AccessRecordService {
                 null
         )
                 .map(AccessSummary::getLabel);
-    }
-
-    private static Function<AccessRecord, Long> groupAccessRecords(Instant now) {
-        return record -> {
-            long secondsAgo = (now.toEpochMilli() - record.getCreatedAt().toEpochMilli()) / 1000;
-            return secondsAgo / FETCH_INTERVAL;
-            // long secondsAgo = now.toEpochMilli() - record.getCreatedAt().toEpochMilli();
-            // return secondsAgo / (FETCH_INTERVAL * 1000);
-        };
     }
 }

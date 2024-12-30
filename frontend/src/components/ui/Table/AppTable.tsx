@@ -16,13 +16,13 @@ const internalSx = createSx({
     ['& tr.error']: {
       bgcolor: red[50],
       '&:hover': {
-        bgcolor: red[100]
+        bgcolor: 'hsl(0, 96%, 95%)'
       }
     },
     ['& tr.warning']: {
       bgcolor: orange[50],
       '&:hover': {
-        bgcolor: orange[100]
+        bgcolor: 'hsl(45, 96%, 94%)'
       }
     }
   }
