@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ApplicationUser {
+
+    @Builder.Default
     private Long id = 0L;
     private String username;
 
