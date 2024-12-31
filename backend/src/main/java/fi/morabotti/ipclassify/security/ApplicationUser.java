@@ -1,10 +1,14 @@
 package fi.morabotti.ipclassify.security;
 
 import io.jsonwebtoken.Claims;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class ApplicationUser {
     private Long id = 0L;
