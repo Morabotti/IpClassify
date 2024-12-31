@@ -1,4 +1,4 @@
-name: Build and Test Spring Boot Application
+name: Build and Test IpClassify
 
 on:
   push:
@@ -27,14 +27,16 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.m2/repository
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/backend/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-m2-
 
     - name: Build with Maven
+      working-directory: ./backend
       run: mvn clean install -DskipTests=false
 
     - name: Run unit tests
+      working-directory: ./backend
       run: mvn test
 
   package:
@@ -56,19 +58,22 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ~/.m2/repository
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-m2-${{ hashFiles('**/backend/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-m2-
 
     - name: Package the application
+      working-directory: ./backend
       run: mvn clean package -DskipTests=true
 
-    - name: Build Docker Image
-      run: |
-        docker build -t ip-classify:latest .
-    - name: Save Docker Image as Artifact
-      run: |
-        docker save ip-classify:latest -o ip-classify.tar
+    - name: Build Docker Image with Spring Boot
+      run: mvn spring-boot:build-image -DskipTests=true -Dspring-boot.build-image.imageName=ip-classify:latest
+      working-directory: ./backend
+
+    - name: Save Docker Image
+      run: docker save ip-classify:latest -o ip-classify.tar
+
+    - name: Upload Docker Image as Artifact
       uses: actions/upload-artifact@v3
       with:
         name: ip-classify-image
