@@ -1,7 +1,11 @@
-# IP Classifier
-Classify and analyze network traffic to applications. Track a specific users and devices across the multiple sites in real time. 
+# IpClassify
+IpClassify and analyze network traffic to applications. Track a specific users and devices across the multiple sites in real time.
 
-Proof of concept / practice project to use reactive Java. Main focus of the project is to show understanding of used technologies.
+![Kafka consumer schema](/docs/assets/ip_classify_kafka_schema.svg)
+
+Proof of concept / practice project to use reactive Java. Main focus of the project is to show understanding of used technologies. 
+
+More information available within the [user manual](/docs/USER_MANUAL.md).
 
 #### Backend technologies
 * JDK 21
@@ -9,6 +13,7 @@ Proof of concept / practice project to use reactive Java. Main focus of the proj
 * ElasticSearch
 * Kafka
 * Redis
+* WebSockets
 
 #### Frontend technologies
 * Node +20
@@ -17,7 +22,7 @@ Proof of concept / practice project to use reactive Java. Main focus of the proj
 
 ### How to run
 
-Backend and frontend run separately. Running all of the dependencies on docker will take around 10gb of ram.
+Backend and frontend run separately. Running all of the dependencies on docker will take around 10GB of ram.
 
 #### Backend:
 1. Have JDK 21 and Maven installed
