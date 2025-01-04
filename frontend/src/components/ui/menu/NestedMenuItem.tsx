@@ -3,7 +3,7 @@ import { FocusEvent, HTMLAttributes, KeyboardEvent, RefAttributes, useImperative
 import { ChevronRight } from '@mui/icons-material';
 import { MaterialSxProps, createSx } from '@theme';
 
-const internalSx = createSx({
+const _sx = createSx({
   rightIcon: theme => ({
     ml: 1.5,
     display: 'flex',
@@ -146,14 +146,14 @@ export const NestedMenuItem = ({
         {...MenuItemProps}
         className={className}
         ref={menuItemRef}
-        sx={[internalSx.menuItem, sx] as MaterialSxProps}
+        sx={[_sx.menuItem, sx] as MaterialSxProps}
       >
         <ListItemIcon>
           {leftIcon}
         </ListItemIcon>
         <ListItemText>{label}</ListItemText>
         {rightIcon && (
-          <Box sx={internalSx.rightIcon}>
+          <Box sx={_sx.rightIcon}>
             {rightIcon}
           </Box>
         )}
@@ -172,7 +172,7 @@ export const NestedMenuItem = ({
         open={open}
         autoFocus={false}
         disableAutoFocus
-        sx={internalSx.subMenu}
+        sx={_sx.subMenu}
         disableEnforceFocus
         onClose={() => setIsSubMenuOpen(false)}
         {...MenuProps}

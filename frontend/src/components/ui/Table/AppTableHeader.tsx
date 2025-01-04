@@ -3,7 +3,7 @@ import { HeadCell, TableOrder, CustomCell } from '@types';
 import { KeyboardArrowDown } from '@mui/icons-material';
 import { visuallyHidden } from '@mui/utils';
 import { TableRow, TableCell, TableSortLabel, Checkbox, Box, Tooltip, tableSortLabelClasses } from '@mui/material';
-import { MaterialSxProps, createSx, gray } from '@theme';
+import { MaterialSxProps, createSx, gray, selector } from '@theme';
 
 const sx = createSx({
   tr: {
@@ -25,7 +25,7 @@ const sx = createSx({
     color: 'text.secondary',
     fontWeight: 600,
     '&:hover': { color: 'text.primary' },
-    [`&.${tableSortLabelClasses.active}`]: {
+    [selector.on(tableSortLabelClasses.active)]: {
       color: 'text.secondary',
       '&:hover': { color: 'text.primary' }
     }

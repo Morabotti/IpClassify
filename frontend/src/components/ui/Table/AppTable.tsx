@@ -1,7 +1,7 @@
-import { Table, TableBody, TableContainer, TableHead } from '@mui/material';
-import { createSx, MaterialSxProps, orange, red } from '@theme';
+import { Table, TableBody, tableCellClasses, TableContainer, TableHead } from '@mui/material';
+import { createSx, MaterialSxProps, orange, red, selector } from '@theme';
 
-const internalSx = createSx({
+const _sx = createSx({
   tableContainer: {
     bgcolor: t => t.palette.background.paper,
     flexGrow: 1,
@@ -9,17 +9,17 @@ const internalSx = createSx({
       py: 1,
       px: 2
     },
-    '& td.MuiTableCell-paddingCheckbox': {
+    [selector.onChildElement('td', tableCellClasses.paddingCheckbox)]: {
       py: 0,
       pr: 0
     },
-    ['& tr.error']: {
+    [selector.onChildElement('tr', 'error')]: {
       bgcolor: red[50],
       '&:hover': {
         bgcolor: 'hsl(0, 96%, 95%)'
       }
     },
-    ['& tr.warning']: {
+    [selector.onChildElement('tr', 'warning')]: {
       bgcolor: orange[50],
       '&:hover': {
         bgcolor: 'hsl(45, 96%, 94%)'
@@ -45,7 +45,7 @@ export const AppTable: React.FC<Props> = ({
 }: Props) => {
   return (
     <TableContainer
-      sx={[internalSx.tableContainer, sx] as MaterialSxProps}
+      sx={[_sx.tableContainer, sx] as MaterialSxProps}
     >
       <Table size={size} stickyHeader={stickyHeader}>
         <TableHead>{head}</TableHead>

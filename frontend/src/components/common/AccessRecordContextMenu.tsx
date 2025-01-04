@@ -2,12 +2,13 @@ import { TrafficLevel } from '@enums';
 import { buttonBaseClasses, Divider, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { AccessRecord, IpClassifyRequest, SimpleContextMenu } from '@types';
 import { ArchiveOutlined, ArticleOutlined, DeleteOutline, Filter1Outlined, LocalOfferOutlined, OpenInBrowser, TagOutlined } from '@mui/icons-material';
-import { createSx } from '@theme';
-import { AccessRecordTrafficLevelSubContextMenu } from '@components/ui/menu';
+import { createSx, selector } from '@theme';
+import { NestedMenuItem } from '@components/ui/menu';
+import { TrafficLevelChip } from '@components/common';
 
 const sx = createSx({
   menu: {
-    [`& .${buttonBaseClasses.root}`]: {
+    [selector.onChild(buttonBaseClasses.root)]: {
       '&:focus-visible': {
         outline: 'none',
         outlineOffset: 'unset'
@@ -15,6 +16,59 @@ const sx = createSx({
     }
   }
 });
+
+export const AccessRecordTrafficLevelSubContextMenu = ({
+  parentOpen,
+  label,
+  icon,
+  selected,
+  onSelect
+}: {
+  parentOpen: boolean;
+  label: string;
+  icon: React.ReactNode;
+  selected?: TrafficLevel | null;
+  onSelect: (set: TrafficLevel) => void;
+}) => {
+  return (
+    <NestedMenuItem
+      parentMenuOpen={parentOpen}
+      label={label}
+      leftIcon={icon}
+    >
+      <MenuItem
+        onClick={() => onSelect(TrafficLevel.NORMAL)}
+        disabled={selected === TrafficLevel.NORMAL}
+        selected={selected === TrafficLevel.NORMAL}
+      >
+        <ListItemIcon>
+          <TrafficLevelChip short level={TrafficLevel.NORMAL} size='small' />
+        </ListItemIcon>
+        Normal
+      </MenuItem>
+      <MenuItem
+        onClick={() => onSelect(TrafficLevel.WARNING)}
+        disabled={selected === TrafficLevel.WARNING}
+        selected={selected === TrafficLevel.WARNING}
+      >
+        <ListItemIcon>
+          <TrafficLevelChip short level={TrafficLevel.WARNING} size='small' />
+        </ListItemIcon>
+        Warning
+      </MenuItem>
+      <MenuItem
+        onClick={() => onSelect(TrafficLevel.DANGER)}
+        disabled={selected === TrafficLevel.DANGER}
+        selected={selected === TrafficLevel.DANGER}
+      >
+        <ListItemIcon>
+          <TrafficLevelChip short level={TrafficLevel.DANGER} size='small' />
+        </ListItemIcon>
+        Danger
+      </MenuItem>
+    </NestedMenuItem>
+  );
+};
 
 interface Props {
   contextMenu: SimpleContextMenu<AccessRecord>;

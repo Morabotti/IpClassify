@@ -8,3 +8,4 @@ export * from './CenterMessage';
 export * from './WebSocketStatusChip';
 export * from './TrafficLevelChip';
 export * from './DateRangeWindow';
+export * from './AccessRecordContextMenu';

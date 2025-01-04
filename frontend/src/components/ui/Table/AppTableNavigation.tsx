@@ -1,9 +1,9 @@
 import { Box, Pagination, Paper } from '@mui/material';
 import { MaterialSxProps, createSx } from '@theme';
-import { PaginationRowSelectorButton } from '@components/ui/Table';
+import { PaginationRowSelectorButton } from '@components/ui/table';
 import { Text } from '@components/common';
 
-const internalSx = createSx({
+const _sx = createSx({
   navigation: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -37,7 +37,7 @@ export const AppTableNavigation: React.FC<Props> = ({
   rows
 }: Props) => {
   return (
-    <Paper square sx={[internalSx.navigation, sx] as MaterialSxProps}>
+    <Paper square sx={[_sx.navigation, sx] as MaterialSxProps}>
       <Box>
         <PaginationRowSelectorButton
           onChange={onChangeRows}
@@ -56,7 +56,7 @@ export const AppTableNavigation: React.FC<Props> = ({
             page={page}
             variant='outlined'
             onChange={(e, v) => onChangePage(v)}
-            sx={internalSx.buttons}
+            sx={_sx.buttons}
             hidePrevButton
             hideNextButton
           />
@@ -67,7 +67,7 @@ export const AppTableNavigation: React.FC<Props> = ({
             page={page}
             variant='outlined'
             onChange={(e, v) => onChangePage(v)}
-            sx={internalSx.buttons}
+            sx={_sx.buttons}
             showFirstButton
             showLastButton
           />

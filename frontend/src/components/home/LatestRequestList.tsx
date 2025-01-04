@@ -14,7 +14,7 @@ import { getTextColor } from '@utils/uiUtils';
 import { getTrafficLevel } from '@utils/dataUtils';
 import clsx from 'clsx';
 import { Link, useNavigate } from 'react-router';
-import { AccessRecordContextMenu } from '@components/ui/menu';
+import { AccessRecordContextMenu } from '@components/common';
 import { createSearchParams } from '@utils/queryUtils';
 import { useAtom } from 'jotai';
 import { loadingAtom } from '@atoms';
@@ -107,7 +107,6 @@ export const LatestRequestList = () => {
       >
         {response.isFetching && [...new Array(pagination.rows ?? 10)].map((e, i) => (
           <TableRow hover key={`row-loading-${i}`}>
-            <TableCell><Skeleton width='70%' height={21} variant='text' /></TableCell>
             <TableCell><Skeleton width='70%' height={21} variant='text' /></TableCell>
             <TableCell><Skeleton width='70%' height={21} variant='text' /></TableCell>
             <TableCell><Skeleton width='70%' height={21} variant='text' /></TableCell>

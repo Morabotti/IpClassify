@@ -3,7 +3,7 @@ import { Button, Menu, MenuItem } from '@mui/material';
 import { MaterialSxProps, createSx } from '@theme';
 import { useState, useRef } from 'react';
 
-const internal = createSx({
+const _sx = createSx({
   button: {
     color: t => t.palette.text.primary,
     borderColor: 'rgba(0, 0, 0, 0.23)'
@@ -44,10 +44,10 @@ export const PaginationRowSelectorButton = ({
         ref={ref}
         variant='outlined'
         color='inherit'
-        sx={[internal.button, (open && internal.open), sx] as MaterialSxProps}
+        sx={[_sx.button, (open && _sx.open), sx] as MaterialSxProps}
         onClick={() => setOpen(true)}
         size='small'
-        startIcon={<LibraryBooksOutlined sx={internal.icon} />}
+        startIcon={<LibraryBooksOutlined sx={_sx.icon} />}
       >
         {rows}
       </Button>
