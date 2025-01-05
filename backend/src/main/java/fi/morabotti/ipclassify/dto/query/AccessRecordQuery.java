@@ -13,9 +13,6 @@ import reactor.util.annotation.Nullable;
 @Builder
 public class AccessRecordQuery {
     @Nullable
-    private TrafficLevel level;
-
-    @Nullable
     private String ip;
 
     @Nullable

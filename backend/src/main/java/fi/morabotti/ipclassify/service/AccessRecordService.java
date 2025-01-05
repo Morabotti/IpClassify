@@ -35,11 +35,13 @@ public class AccessRecordService {
             PaginationQuery pagination,
             SortQuery sort,
             DateQuery date,
+            CommonQuery common,
             AccessRecordQuery query
     ) {
         return customAccessRecordRepository.getPaginated(
                 QueryUtility.toPageable(pagination, sort),
                 date,
+                common,
                 query
         );
     };

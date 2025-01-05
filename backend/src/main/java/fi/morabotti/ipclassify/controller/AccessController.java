@@ -38,9 +38,10 @@ public class AccessController {
             @ModelAttribute PaginationQuery pagination,
             @ModelAttribute SortQuery sort,
             @ModelAttribute DateQuery date,
+            @ModelAttribute CommonQuery common,
             @ModelAttribute AccessRecordQuery query
     ){
-        return accessRecordService.getPagination(pagination, sort, date, query);
+        return accessRecordService.getPagination(pagination, sort, date, common, query);
     }
 
     @GetMapping("/{ip}")

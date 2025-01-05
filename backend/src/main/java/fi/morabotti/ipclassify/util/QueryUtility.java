@@ -2,6 +2,7 @@ package fi.morabotti.ipclassify.util;
 
 import fi.morabotti.ipclassify.dto.TrafficLevel;
 import fi.morabotti.ipclassify.dto.query.AccessRecordQuery;
+import fi.morabotti.ipclassify.dto.query.CommonQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.dto.query.PaginationQuery;
 import fi.morabotti.ipclassify.dto.query.SortQuery;
@@ -33,12 +34,31 @@ public class QueryUtility {
         return PageRequest.of(page, size, Sort.by(direction, sort.getSort()));
     }
 
-    public static Criteria.CriteriaChain toCriteriaChain(AccessRecordQuery query) {
+    public static Criteria.CriteriaChain commonToAccessRecordCriteriaChain(CommonQuery query) {
         Criteria.CriteriaChain chain = new Criteria.CriteriaChain();
 
         if (query.getLevel() != null) {
             chain.add(toCriteria(query.getLevel()));
         }
+
+        if (query.getSearch() != null) {
+            chain.add(Criteria.where("ip")
+                    .contains(query.getSearch())
+                    .or("zip")
+                    .contains(query.getSearch())
+                    .or("country")
+                    .fuzzy(query.getSearch())
+                    .or("city")
+                    .fuzzy(query.getSearch())
+                    .or("application")
+                    .fuzzy(query.getSearch()));
+        }
+
+        return chain;
+    }
+
+    public static Criteria.CriteriaChain toCriteriaChain(AccessRecordQuery query) {
+        Criteria.CriteriaChain chain = new Criteria.CriteriaChain();
 
         if (query.getIp() != null) {
             chain.add(Criteria.where("ip").is(query.getIp()));

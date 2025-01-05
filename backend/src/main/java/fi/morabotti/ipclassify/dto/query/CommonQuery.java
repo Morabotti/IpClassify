@@ -14,4 +14,7 @@ import reactor.util.annotation.Nullable;
 public class CommonQuery {
     @Nullable
     private TrafficLevel level;
+
+    @Nullable
+    private String search;
 }

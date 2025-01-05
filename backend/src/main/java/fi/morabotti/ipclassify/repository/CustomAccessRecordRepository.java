@@ -11,6 +11,7 @@ import fi.morabotti.ipclassify.dto.TrafficSummary;
 import fi.morabotti.ipclassify.dto.common.Pagination;
 import fi.morabotti.ipclassify.dto.query.AccessRecordQuery;
 import fi.morabotti.ipclassify.dto.query.AggregationQuery;
+import fi.morabotti.ipclassify.dto.query.CommonQuery;
 import fi.morabotti.ipclassify.dto.query.DateQuery;
 import fi.morabotti.ipclassify.service.AccessRecordService;
 import fi.morabotti.ipclassify.util.AggregationUtility;
@@ -39,10 +40,12 @@ public class CustomAccessRecordRepository {
 
     public Mono<Pagination<AccessRecord>> getPaginated(
             Pageable pageable,
-            DateQuery dateQuery,
+            DateQuery date,
+            CommonQuery common,
             AccessRecordQuery query
     ) {
-        CriteriaQuery criteriaQuery = new CriteriaQuery(QueryUtility.toCriteria("createdAt", dateQuery));
+        CriteriaQuery criteriaQuery = new CriteriaQuery(QueryUtility.toCriteria("createdAt", date));
+        QueryUtility.applyToQuery(criteriaQuery, QueryUtility.commonToAccessRecordCriteriaChain(common));
         QueryUtility.applyToQuery(criteriaQuery, QueryUtility.toCriteriaChain(query));
 
         NativeQueryBuilder queryBuilder = NativeQuery.builder()

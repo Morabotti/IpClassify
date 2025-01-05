@@ -24,10 +24,10 @@ export interface AggregationQuery {
 
 export interface CommonQuery {
   level?: TrafficLevel | null;
+  search?: string;
 }
 
 export interface AccessRecordQuery {
-  level?: TrafficLevel | null;
   ip?: string | null;
   city?: string | null;
   zip?: string | null;

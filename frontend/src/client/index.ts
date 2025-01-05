@@ -13,7 +13,7 @@ export const authApi = {
 };
 
 export const accessApi = {
-  getAll: (a: PaginationQuery, b: SortQuery, c: DateQuery, d: AccessRecordQuery) => query<Pagination<AccessRecord>>(`/access`, 'GET', { params: [a, b, c, d] }),
+  getAll: (a: PaginationQuery, b: SortQuery, c: DateQuery, d: CommonQuery, e: AccessRecordQuery) => query<Pagination<AccessRecord>>(`/access`, 'GET', { params: [a, b, c, d, e] }),
   getByIp: (ip: string) => query<IpInformation>(`/access/${ip}`),
   getSummary: (d: DateQuery, a: AggregationQuery, c: CommonQuery) => query<AccessSummary[]>(`/access/summary`, 'GET', { params: [d, a, c] }),
   updateIpClassification: (body: IpClassifyRequest) => query<IpClassification>(`/access/${body.ip}/classify`, 'PUT', { body })

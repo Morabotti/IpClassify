@@ -1,6 +1,7 @@
 import { Dayjs } from 'dayjs';
 
 export type TableAlign = 'inherit' | 'left' | 'center' | 'right' | 'justify';
+export type TagFilterType = 'string' | 'number' | 'date' | 'boolean' | 'date-range' | 'option' | 'auto-complete';
 
 export interface ContextMenu {
   open: boolean;
@@ -68,4 +69,33 @@ export interface DateRangeState {
   after: Dayjs | null;
   before: Dayjs | null;
   label: string;
+}
+
+export interface TagOption {
+  label: string;
+  value: unknown;
+}
+
+export interface TagValue {
+  key: string;
+  value: unknown;
+}
+
+export interface TagFilterOption {
+  id: string;
+  key: string | string[];
+  type: TagFilterType;
+  label: string;
+  options?: TagOption[];
+  emptyLabel?: string;
+  emptyValue?: string;
+  defaultValue?: unknown;
+  placeHolderHelper?: string;
+  formatValue?: (value: unknown) => string;
+  fromSearch?: (value: string, key: string) => unknown;
+  toSearch?: (value: unknown, key: string) => string | null;
+}
+
+export interface TagEntry {
+  id: string | null;
 }

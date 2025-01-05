@@ -41,8 +41,8 @@ export const LatestRequestList = () => {
   const navigate = useNavigate();
 
   const response = useQuery({
-    queryKey: [Client.GetAccessRecords, pagination.toQuery, sort.toQuery, dateQuery, {}],
-    queryFn: () => accessApi.getAll(pagination.toQuery, sort.toQuery, dateQuery, {})
+    queryKey: [Client.GetAccessRecords, pagination.toQuery, sort.toQuery, dateQuery, {}, {}],
+    queryFn: () => accessApi.getAll(pagination.toQuery, sort.toQuery, dateQuery, {}, {})
   });
 
   const onClassify = async (set: IpClassifyRequest) => {

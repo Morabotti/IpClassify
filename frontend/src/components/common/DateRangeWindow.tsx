@@ -52,7 +52,11 @@ const sx = createSx({
     p: 0.75
   },
   input: {
-    pt: 0.75
+    '& label': {
+      backgroundColor: t => t.palette.background.paper,
+      pr: 0.5,
+      pl: 0.5
+    }
   }
 });
 
@@ -60,7 +64,8 @@ interface Props {
   element: HTMLElement | null;
   open: boolean;
   baseValues: DateQueryWithLabel;
-  onChange: (set: DateQueryWithLabel | null) => void;
+  showClear?: boolean;
+  onChange: (set: DateQueryWithLabel | null, e: React.MouseEvent<HTMLButtonElement>) => void;
   onClose?: () => void;
 }
 
@@ -68,6 +73,7 @@ export const DateRangeWindow = ({
   element,
   open,
   baseValues,
+  showClear,
   onChange,
   onClose
 }: Props) => {
@@ -115,7 +121,7 @@ export const DateRangeWindow = ({
         }
       ]}
     >
-      <ClickAwayListener onClickAway={() => onClose?.()}>
+      <ClickAwayListener onClickAway={onClose ? onClose : () => {}}>
         <Grow in={open} timeout={150}>
           <Paper sx={sx.paper} elevation={8}>
             <Box>
@@ -158,7 +164,7 @@ export const DateRangeWindow = ({
             <Divider />
             <Box gap={2} display='flex' flexDirection='column' my={0.5}>
               <DateTimeField
-                label='Filter after: '
+                label='Filter after'
                 value={tempQuery?.after ?? null}
                 size='small'
                 fullWidth
@@ -182,20 +188,33 @@ export const DateRangeWindow = ({
                 variant='contained'
                 color='secondary'
                 size='small'
-                onClick={() => onChange(toQuery(tempQuery))}
+                onClick={(e) => onChange(toQuery(tempQuery), e)}
                 disableElevation
               >
                 Enter
               </Button>
-              <Button
-                variant='contained'
-                color='primary'
-                size='small'
-                onClick={onClose}
-                disableElevation
-              >
-                Close
-              </Button>
+              {onClose && (
+                <Button
+                  variant='contained'
+                  color='primary'
+                  size='small'
+                  onClick={onClose}
+                  disableElevation
+                >
+                  Close
+                </Button>
+              )}
+              {showClear && (
+                <Button
+                  variant='contained'
+                  color='error'
+                  size='small'
+                  onClick={e => onChange({ label: '', after: null, before: null }, e)}
+                  disableElevation
+                >
+                  Clear
+                </Button>
+              )}
             </Stack>
           </Paper>
         </Grow>
