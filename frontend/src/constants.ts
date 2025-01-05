@@ -2,7 +2,7 @@ import { TrafficLevel } from '@enums';
 import { DateQuery, PaginationQuery, TagFilterOption } from '@types';
 import { createDateRangeField } from '@utils/tagUtils';
 
-export const defaultPagination: PaginationQuery = { page: 1, rows: 50 };
+export const defaultPagination: PaginationQuery = { page: 0, rows: 50 };
 export const emptyDateQuery: DateQuery = { after: null, before: null };
 
 export const trafficLevels = [

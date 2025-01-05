@@ -1,7 +1,7 @@
 import { LibraryBooksOutlined } from '@mui/icons-material';
 import { Button, Menu, MenuItem } from '@mui/material';
 import { MaterialSxProps, createSx } from '@theme';
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 
 const _sx = createSx({
   button: {
@@ -30,32 +30,37 @@ export const PaginationRowSelectorButton = ({
   options = [10, 20, 30, 50, 100, 150, 200, 300],
   onChange
 }: Props) => {
-  const ref = useRef<HTMLButtonElement>(null);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<HTMLButtonElement | null>(null);
 
   const handleSelect = (set: number) => () => {
     onChange(set);
-    setOpen(false);
+    setOpen(null);
   };
 
   return (
     <>
       <Button
-        ref={ref}
         variant='outlined'
         color='inherit'
         sx={[_sx.button, (open && _sx.open), sx] as MaterialSxProps}
-        onClick={() => setOpen(true)}
+        onClick={(e) => setOpen(e.currentTarget)}
         size='small'
         startIcon={<LibraryBooksOutlined sx={_sx.icon} />}
       >
         {rows}
       </Button>
       <Menu
-        // eslint-disable-next-line react-compiler/react-compiler
-        anchorEl={ref.current}
-        open={open}
-        onClose={() => setOpen(false)}
+        anchorEl={open}
+        open={!!open}
+        onClose={() => setOpen(null)}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'center'
+        }}
+        transformOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
       >
         {options.map(option => (
           <MenuItem

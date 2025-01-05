@@ -1,5 +1,5 @@
 import { Box, Pagination, Paper } from '@mui/material';
-import { MaterialSxProps, createSx } from '@theme';
+import { MaterialSxProps, createSx, gray } from '@theme';
 import { PaginationRowSelectorButton } from '@components/ui/table';
 import { Text } from '@components/common';
 
@@ -8,7 +8,12 @@ const _sx = createSx({
     display: 'flex',
     justifyContent: 'space-between',
     gap: 2,
-    alignItems: 'center'
+    alignItems: 'center',
+    py: 1,
+    px: 2,
+    color: theme => theme.palette.text.secondary,
+    backgroundColor: gray[100],
+    borderTop: `1px solid ${gray[200]}`
   },
   buttons: {
     '& button': {
@@ -46,16 +51,16 @@ export const AppTableNavigation: React.FC<Props> = ({
         />
       </Box>
       <Text variant='body1' color='text.secondary'>
-        {`${(page * rows) - rows + 1} - ${page * rows > length ? length : page * rows} of ${length} items`}
+        {`${page * rows + 1} - ${(page * rows + rows) > length ? length : (page * rows + rows)} of ${length} items`}
       </Text>
       <Box>
         {minimal ? (
           <Pagination
             count={Math.ceil(length / rows) || 1}
             shape='rounded'
-            page={page}
+            page={page + 1}
             variant='outlined'
-            onChange={(e, v) => onChangePage(v)}
+            onChange={(e, v) => onChangePage(v - 1)}
             sx={_sx.buttons}
             hidePrevButton
             hideNextButton
@@ -64,9 +69,9 @@ export const AppTableNavigation: React.FC<Props> = ({
           <Pagination
             count={Math.ceil(length / rows) || 1}
             shape='rounded'
-            page={page}
+            page={page + 1}
             variant='outlined'
-            onChange={(e, v) => onChangePage(v)}
+            onChange={(e, v) => onChangePage(v - 1)}
             sx={_sx.buttons}
             showFirstButton
             showLastButton

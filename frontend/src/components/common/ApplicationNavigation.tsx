@@ -6,7 +6,7 @@ import { ArrowDropDown, SvgIconComponent, Troubleshoot } from '@mui/icons-materi
 import { useAtomValue } from 'jotai';
 import { loadingAtom } from '@atoms';
 
-const APP_BAR_HEIGHT = '48px;';
+const APP_BAR_HEIGHT = '48px';
 
 const sx = createSx({
   container: {

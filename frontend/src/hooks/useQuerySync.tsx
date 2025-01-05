@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 export function useQuerySync<T>(value: T, delay: number = 0): T | null {
-  const { pathname, search } = useLocation();
+  const { pathname, search, state } = useLocation();
   const navigate = useNavigate();
 
   const first = useRef(false);
@@ -26,20 +26,20 @@ export function useQuerySync<T>(value: T, delay: number = 0): T | null {
     const newPath = `${pathname}?${createStateParams(value, search)}`;
 
     if (delay === 0) {
-      navigate(newPath, { replace: true });
+      navigate(newPath, { replace: true, state });
       setUpdated(value);
       return;
     }
 
     const handler = setTimeout(() => {
-      navigate(newPath, { replace: true });
+      navigate(newPath, { replace: true, state });
       setUpdated(value);
     }, delay);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [value, delay, pathname, navigate, search]);
+  }, [value, delay, pathname, navigate, state, search]);
 
   return updated;
 }

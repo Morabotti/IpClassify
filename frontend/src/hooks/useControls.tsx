@@ -19,12 +19,12 @@ interface ControlsContext {
 
 export const useControls = ({
   defaultRows = (defaultPagination.rows ?? 50),
-  defaultPage = (defaultPagination.page ?? 1),
+  defaultPage = (defaultPagination.page ?? 0),
   defaultPageKey = QueryParams.Page,
   defaultRowsKey = QueryParams.Rows,
   memory = false
 }: PaginationControlOptions = {}): ControlsContext => {
-  const { pathname, search } = useLocation();
+  const { pathname, state, search } = useLocation();
   const navigate = useNavigate();
   const { page, rows, paginationFilter, toQuery } = usePagination({
     defaultPage,
@@ -59,9 +59,9 @@ export const useControls = ({
       : pathname;
 
     if (changed) {
-      navigate(url, { replace: true });
+      navigate(url, { replace: true, state });
     }
-  }, [pathname, navigate, search, defaultPageKey, defaultRowsKey, defaultRows, defaultPage]);
+  }, [pathname, navigate, search, defaultPageKey, defaultRowsKey, state, defaultRows, defaultPage]);
 
   const onChangeRows = useCallback((set: number) => {
     if (memory) {

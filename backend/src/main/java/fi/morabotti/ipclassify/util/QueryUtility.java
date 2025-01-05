@@ -42,16 +42,14 @@ public class QueryUtility {
         }
 
         if (query.getSearch() != null) {
-            chain.add(Criteria.where("ip")
-                    .contains(query.getSearch())
-                    .or("zip")
-                    .contains(query.getSearch())
-                    .or("country")
-                    .fuzzy(query.getSearch())
-                    .or("city")
-                    .fuzzy(query.getSearch())
-                    .or("application")
-                    .fuzzy(query.getSearch()));
+            Criteria zipCriteria = Criteria.where("zip").contains(query.getSearch());
+            Criteria countryCriteria = Criteria.where("country").contains(query.getSearch());
+
+            chain.add(
+                    new Criteria()
+                            .or(zipCriteria)
+                            .or(countryCriteria)
+            );
         }
 
         return chain;

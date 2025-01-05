@@ -1,28 +1,52 @@
 import { TagFilters } from '@components/ui/tags';
-import { accessRecordTagsOptions } from '@constants';
-import { useTagFilters } from '@hooks';
 import { Search } from '@mui/icons-material';
 import { Box, Divider, InputAdornment, Paper, TextField } from '@mui/material';
 import { createSx } from '@theme';
+import { TagEntry, TagFilterOption, TagValue } from '@types';
 
 const sx = createSx({
   paper: {
     display: 'flex'
+  },
+  input: {
+    width: 280
   }
 });
 
-export const CatalogFilters = () => {
-  const tags = useTagFilters({
-    options: accessRecordTagsOptions,
-    defaultEntries: [{ id: 'createdAt' }]
-  });
+interface Props {
+  search: string;
+  tagEntries: TagEntry[];
+  tagValues: TagValue[];
+  tagOptions: TagFilterOption[];
+  defaultTagEntries: TagEntry[];
+  onAddEntry: () => void;
+  onDeleteEntry: (index: number) => void;
+  onUpdateEntry: (index: number, set: TagEntry) => void;
+  onSubmitValues: (values: TagValue[]) => void;
+  onSearchChange: (set: string) => void;
+}
 
+export const CatalogFilters = ({
+  search,
+  tagOptions,
+  tagValues,
+  tagEntries,
+  defaultTagEntries,
+  onAddEntry,
+  onDeleteEntry,
+  onUpdateEntry,
+  onSubmitValues,
+  onSearchChange
+}: Props) => {
   return (
     <Paper square variant='outlined' sx={sx.paper}>
       <Box py={1} mx={2}>
         <TextField
           size='small'
-          placeholder='Search...'
+          placeholder='Search... (WIP)'
+          sx={sx.input}
+          value={search}
+          onChange={e => onSearchChange(e.target.value)}
           slotProps={{
             input: {
               startAdornment: (
@@ -37,14 +61,14 @@ export const CatalogFilters = () => {
       <Divider orientation='vertical' />
       <Box py={1} mx={2} ml={1.5} display='flex' alignItems='center'>
         <TagFilters
-          options={tags.tagOptions}
-          values={tags.tagValues}
-          entries={tags.entries}
-          onAdd={tags.onAddEntry}
-          onDelete={tags.onDeleteEntry}
-          onUpdate={tags.onUpdateEntry}
-          onSubmit={tags.onSubmitValues}
-          defaultEntries={tags.defaultEntries}
+          options={tagOptions}
+          values={tagValues}
+          entries={tagEntries}
+          defaultEntries={defaultTagEntries}
+          onAdd={onAddEntry}
+          onDelete={onDeleteEntry}
+          onUpdate={onUpdateEntry}
+          onSubmit={onSubmitValues}
           inputSelectWidth={200}
         />
       </Box>
