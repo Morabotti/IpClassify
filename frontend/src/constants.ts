@@ -14,26 +14,25 @@ export const trafficLevels = [
 
 export const accessRecordTagsOptions: TagFilterOption[] = [
   createDateRangeField('createdAt', 'Creation time', ['after', 'before', '_label']),
-  { id: 'application', key: 'application', label: 'Application', type: 'string' },
-  { id: 'country', key: 'country', label: 'Country', type: 'string' },
-  { id: 'city', key: 'city', label: 'City', type: 'string' },
+  { id: 'application', key: 'application', label: 'Application', type: 'auto-complete' },
+  { id: 'country', key: 'country', label: 'Country', type: 'auto-complete' },
+  { id: 'city', key: 'city', label: 'City', type: 'auto-complete' },
   { id: 'zip', key: 'zip', label: 'Zip', type: 'string' },
   {
     id: 'isMobile',
     key: 'isMobile',
     label: 'Mobile',
     type: 'boolean',
-    formatValue: value => value ? 'Only mobile records' : 'Only non-mobile records',
+    formatValue: value => value ? 'Only mobile networks' : 'Only non-mobile networks',
     fromSearch: value => value === 'true',
     toSearch: value => value ? 'true' : 'false'
   },
+  { id: 'timezone', key: 'timezone', label: 'Timezone', type: 'option' },
   {
     id: 'level',
     key: 'level',
     label: 'IP Classification',
     type: 'option',
-    emptyValue: '',
-    defaultValue: '',
     options: [
       { label: 'Only normal', value: TrafficLevel.NORMAL },
       { label: 'Only warning', value: TrafficLevel.WARNING },

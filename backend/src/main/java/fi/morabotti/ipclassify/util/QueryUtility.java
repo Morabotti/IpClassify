@@ -67,15 +67,51 @@ public class QueryUtility {
         }
 
         if (query.getCountry() != null) {
-            chain.add(Criteria.where("country").is(query.getCountry()));
+            chain.add(Criteria.where("country").matches(query.getCountry()));
+        }
+
+        if (query.getContinent() != null) {
+            chain.add(Criteria.where("continent").matches(query.getContinent()));
         }
 
         if (query.getCity() != null) {
-            chain.add(Criteria.where("city").is(query.getCity()));
+            chain.add(Criteria.where("city").matches(query.getCity()));
         }
 
         if (query.getApplication() != null) {
-            chain.add(Criteria.where("application").is(query.getApplication()));
+            chain.add(Criteria.where("application").matches(query.getApplication()));
+        }
+
+        if (query.getMethod() != null) {
+            chain.add(Criteria.where("method").is(query.getMethod()));
+        }
+
+        if (query.getPath() != null) {
+            chain.add(Criteria.where("path").contains(query.getPath()));
+        }
+
+        if (query.getUserId() != null) {
+            chain.add(Criteria.where("userId").is(query.getUserId()));
+        }
+
+        if (query.getIsp() != null) {
+            chain.add(Criteria.where("isp").matches(query.getIsp()));
+        }
+
+        if (query.getTimezone() != null) {
+            chain.add(Criteria.where("timezone").matches(query.getTimezone()));
+        }
+
+        if (query.getIsMobile() != null) {
+            chain.add(Criteria.where("isMobile").is(query.getIsMobile()));
+        }
+
+        if (query.getIsHosting() != null) {
+            chain.add(Criteria.where("isHosting").is(query.getIsHosting()));
+        }
+
+        if (query.getIsProxy() != null) {
+            chain.add(Criteria.where("isProxy").is(query.getIsProxy()));
         }
 
         return chain;

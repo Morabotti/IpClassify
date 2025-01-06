@@ -21,25 +21,25 @@ public class LocationRecord {
     @Field(type = FieldType.Ip)
     private String ip;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String continent;
 
-    @Field(type = FieldType.Match_Only_Text)
+    @Field(type = FieldType.Keyword)
     private String continentCode;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String country;
 
-    @Field(type = FieldType.Match_Only_Text)
+    @Field(type = FieldType.Keyword)
     private String region;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String regionName;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String city;
 
-    @Field(type = FieldType.Match_Only_Text)
+    @Field(type = FieldType.Keyword)
     private String zip;
 
     @Field(type = FieldType.Double)
@@ -48,16 +48,16 @@ public class LocationRecord {
     @Field(type = FieldType.Double)
     private Double longitude;
 
-    @Field(type = FieldType.Match_Only_Text)
+    @Field(type = FieldType.Keyword)
     private String timezone;
 
-    @Field(type = FieldType.Match_Only_Text)
+    @Field(type = FieldType.Keyword)
     private String currency;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Match_Only_Text)
     private String isp;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Match_Only_Text)
     private String org;
 
     @Field(type = FieldType.Boolean)

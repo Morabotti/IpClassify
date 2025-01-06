@@ -7,6 +7,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import reactor.util.annotation.Nullable;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,4 +20,9 @@ public class CommonQuery {
 
     @Nullable
     private String search;
+
+    public CommonQuery decode() {
+        if (search != null) setSearch(URLDecoder.decode(search, StandardCharsets.UTF_8));
+        return this;
+    }
 }

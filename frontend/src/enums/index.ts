@@ -7,7 +7,8 @@ export enum LocalStorageKey {
 export enum Client {
   GetAccessRecords = 'access-records',
   GetAccessByIp = 'access-record-information',
-  GetAccessSummary = 'access-record-summary'
+  GetAccessSummary = 'access-record-summary',
+  GetAccessMetadata = 'access-record-metadata'
 }
 
 export enum QueryParams {

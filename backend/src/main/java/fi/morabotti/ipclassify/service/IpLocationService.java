@@ -2,7 +2,10 @@ package fi.morabotti.ipclassify.service;
 
 import fi.morabotti.ipclassify.client.IpServiceHttpClient;
 import fi.morabotti.ipclassify.domain.LocationRecord;
+import fi.morabotti.ipclassify.dto.RecordMetadata;
 import fi.morabotti.ipclassify.mapper.IpServiceMapper;
+import fi.morabotti.ipclassify.repository.CustomAccessRecordRepository;
+import fi.morabotti.ipclassify.repository.CustomLocationRecordRepository;
 import fi.morabotti.ipclassify.repository.LocationRecordRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -14,6 +17,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Set;
 
 @Slf4j
@@ -23,24 +27,45 @@ public class IpLocationService {
     private final ReactiveValueOperations<String, LocationRecord> cacheOperations;
     private final ReactiveRedisTemplate<String, LocationRecord> cacheTemplate;
     private final LocationRecordRepository locationRecordRepository;
+    private final CustomLocationRecordRepository customLocationRecordRepository;
+    private final CustomAccessRecordRepository customAccessRecordRepository;
 
     private static final String REDIS_NAMESPACE = "location";
 
     public IpLocationService(
             ReactiveRedisTemplate<String, LocationRecord> template,
             IpServiceHttpClient ipServiceHttpClient,
-            LocationRecordRepository locationRecordRepository
+            LocationRecordRepository locationRecordRepository,
+            CustomLocationRecordRepository customLocationRecordRepository,
+            CustomAccessRecordRepository customAccessRecordRepository
     ) {
         this.ipServiceHttpClient = ipServiceHttpClient;
         this.cacheOperations = template.opsForValue();
         this.cacheTemplate = template;
         this.locationRecordRepository = locationRecordRepository;
+        this.customLocationRecordRepository = customLocationRecordRepository;
+        this.customAccessRecordRepository = customAccessRecordRepository;
     }
 
     @EventListener(ApplicationReadyEvent.class)
     public void onApplicationReady() {
         log.info("Initializing IP location caching");
         reconstructCache().subscribe();
+    }
+
+    public Mono<RecordMetadata> getMetadata() {
+        return Mono.zip(
+                customAccessRecordRepository.getDistinctBy("application"),
+                customLocationRecordRepository.getDistinctBy("country"),
+                customLocationRecordRepository.getDistinctBy("city"),
+                customLocationRecordRepository.getDistinctBy("timezone")
+        )
+                .map(tuple -> RecordMetadata.builder()
+                        .applications(tuple.getT1())
+                        .countries(tuple.getT2())
+                        .cities(tuple.getT3())
+                        .timezones(tuple.getT4())
+                        .build());
     }
 
     public Mono<LocationRecord> getLocationRecord(String ip) {

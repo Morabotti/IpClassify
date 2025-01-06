@@ -29,7 +29,17 @@ export interface CommonQuery {
 
 export interface AccessRecordQuery {
   ip?: string | null;
+  continent?: string | null;
   city?: string | null;
   zip?: string | null;
   country?: string | null;
+  application?: string | null;
+  method?: string | null;
+  path?: string | null;
+  userId?: number | null;
+  isp?: string | null;
+  timezone?: string | null;
+  isMobile?: boolean | null;
+  isProxy?: boolean | null;
+  isHosting?: boolean | null;
 }

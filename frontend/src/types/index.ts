@@ -123,3 +123,10 @@ export interface IpClassifyRequest {
   level: TrafficLevel;
   updateHistory: boolean;
 }
+
+export interface RecordMetadata {
+  applications: string[];
+  countries: string[];
+  cities: string[];
+  timezones: string[];
+}

@@ -17,46 +17,46 @@ public class AccessRecord {
     @Id
     private String id;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String application;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Match_Only_Text)
     private String path;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String method;
 
     @Field(type = FieldType.Ip)
     private String ip;
 
-    @Field(type = FieldType.Match_Only_Text)
+    @Field(type = FieldType.Keyword)
     private String requestId;
 
     @Field(type = FieldType.Match_Only_Text)
     private String userId;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Match_Only_Text)
     private String userAgent;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String referrer;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String acceptLanguage;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String continent;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String country;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String region;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Keyword)
     private String city;
 
-    @Field(type = FieldType.Match_Only_Text)
+    @Field(type = FieldType.Keyword)
     private String zip;
 
     @Field(type = FieldType.Double)
@@ -65,13 +65,13 @@ public class AccessRecord {
     @Field(type = FieldType.Double)
     private Double longitude;
 
-    @Field(type = FieldType.Match_Only_Text)
+    @Field(type = FieldType.Keyword)
     private String timezone;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Match_Only_Text)
     private String isp;
 
-    @Field(type = FieldType.Text)
+    @Field(type = FieldType.Match_Only_Text)
     private String org;
 
     @Field(type = FieldType.Boolean)

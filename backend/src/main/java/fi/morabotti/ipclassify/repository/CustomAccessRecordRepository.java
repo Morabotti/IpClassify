@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch._types.aggregations.Aggregation;
 import co.elastic.clients.elasticsearch._types.aggregations.FieldDateMath;
 import co.elastic.clients.util.NamedValue;
 import fi.morabotti.ipclassify.domain.AccessRecord;
+import fi.morabotti.ipclassify.domain.LocationRecord;
 import fi.morabotti.ipclassify.dto.AccessSummary;
 import fi.morabotti.ipclassify.dto.TrafficLevel;
 import fi.morabotti.ipclassify.dto.TrafficSummary;
@@ -143,6 +144,22 @@ public class CustomAccessRecordRepository {
                         .build());
     }
 
+    public Mono<List<String>> getDistinctBy(String key) {
+        NativeQuery query = new NativeQueryBuilder()
+                .withAggregation(
+                        "distinct_values",
+                        Aggregation.of(
+                                a -> a.terms(t -> t.field(key).size(1000))
+                        )
+                )
+                .build();
+
+        return reactiveSearchOperations.aggregate(query, AccessRecord.class)
+                .flatMap(AggregationUtility::formatStringTermAggregation)
+                .map(bucket -> bucket.key().stringValue())
+                .collectList();
+    }
+
     private Query getCommonRecordsQuery(
             DateQuery dateQuery,
             AggregationQuery aggregation,
@@ -160,19 +177,11 @@ public class CustomAccessRecordRepository {
                         String.format("most_common_%s", aggregation.getField()),
                         Aggregation.of(
                                 t -> t.terms(
-                                        t1 -> t1.field(formatTermSearchField(aggregation.getField()))
+                                        t1 -> t1.field(aggregation.getField())
                                                 .size(aggregation.getOptionalCount().orElse(10))
                                 )
                         )
                 )
                 .build();
-    }
-
-    private String formatTermSearchField(String field) {
-        if (field.equals("ip")) {
-            return field;
-        }
-
-        return String.format("%s.keyword", field);
     }
 }

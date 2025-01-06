@@ -1,5 +1,5 @@
 import { TrafficLevel } from '@enums';
-import { AccessRecord, AccessRecordQuery, CommonQuery, DateQuery } from '@types';
+import { AccessRecord, AccessRecordQuery, CommonQuery, DateQuery, TagOption } from '@types';
 import { safeParseNumber } from './queryUtils';
 
 export const getTrafficLevel = (record: AccessRecord): TrafficLevel => {
@@ -37,6 +37,24 @@ export const tagsToAccessRecordQuery = (queryParams?: Record<string, string>): A
     city: queryParams.city,
     country: queryParams.country,
     ip: queryParams.ip,
-    zip: queryParams.zip
+    zip: queryParams.zip,
+    application: queryParams.application,
+    continent: queryParams.continent,
+    isHosting: queryParams.isHosting ? queryParams.isHosting === 'true' : null,
+    isMobile: queryParams.isMobile ? queryParams.isMobile === 'true' : null,
+    isProxy: queryParams.isProxy ? queryParams.isProxy === 'true' : null,
+    isp: queryParams.isp,
+    timezone: queryParams.timezone,
+    method: queryParams.method,
+    path: queryParams.path,
+    userId: safeParseNumber(queryParams.userId)
   };
+};
+
+export const toTagOptions = (list: string[]): TagOption[] => {
+  return list.map(i => ({ label: i, value: i }));
+};
+
+export const clamp = (number: number, lower: number, upper: number): number => {
+  return Math.min(Math.max(number, lower), upper);
 };

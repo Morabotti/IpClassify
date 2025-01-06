@@ -69,7 +69,7 @@ export const CatalogFilters = ({
           onDelete={onDeleteEntry}
           onUpdate={onUpdateEntry}
           onSubmit={onSubmitValues}
-          inputSelectWidth={200}
+          inputSelectWidth={170}
         />
       </Box>
     </Paper>
