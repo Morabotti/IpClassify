@@ -6,6 +6,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { theme } from '@theme';
 import { LocalStorageKey } from '@enums';
 import { AuthProvider } from '@contexts/AuthContext';
+import { NotificationProvider } from '@contexts/NotificationContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,9 +57,11 @@ export const ApplicationProviders: FC<Props> = ({ children }: Props) => {
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
+            <NotificationProvider>
+              <AuthProvider>
+                {children}
+              </AuthProvider>
+            </NotificationProvider>
           </QueryClientProvider>
         </LocalizationProvider>
       </ThemeProvider>

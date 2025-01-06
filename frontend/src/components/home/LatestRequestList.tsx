@@ -3,7 +3,7 @@ import { createSx } from '@theme';
 import { useQuery } from '@tanstack/react-query';
 import { Client, TrafficLevel } from '@enums';
 import { accessApi } from '@client';
-import { useOrder, usePagination, useSimpleContextMenu } from '@hooks';
+import { useNotification, useOrder, usePagination, useSimpleContextMenu } from '@hooks';
 import { AccessRecord, DateQuery, IpClassifyRequest } from '@types';
 import { emptyDateQuery } from '@constants';
 import { Text } from '@components/common';
@@ -38,6 +38,7 @@ export const LatestRequestList = () => {
   const sort = useOrder<AccessRecord>('createdAt', false, 'DESC');
   const [dateQuery, setDateQuery] = useState<DateQuery>({ ...emptyDateQuery, before: dayjs().valueOf() });
   const contextMenu = useSimpleContextMenu<AccessRecord>();
+  const { createNotification } = useNotification();
   const navigate = useNavigate();
 
   const response = useQuery({
@@ -50,10 +51,11 @@ export const LatestRequestList = () => {
 
     try {
       await accessApi.updateIpClassification(set);
+      createNotification('Successfully updated classification', 'success');
       response.refetch();
     }
     catch (e) {
-      console.error(e);
+      createNotification('Failed to update classification', 'error');
     }
 
     setLoading(false);

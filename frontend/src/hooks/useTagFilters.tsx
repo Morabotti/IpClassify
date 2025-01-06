@@ -20,6 +20,7 @@ export interface TagFiltersContract {
   onUpdateEntry: (index: number, set: TagEntry) => void;
   onDeleteEntry: (index: number) => void;
   onSubmitValues: (values: TagValue[]) => void;
+  onSubmitEntryValue: (value: TagValue) => void;
 }
 
 export const useTagFilters = ({
@@ -104,6 +105,29 @@ export const useTagFilters = ({
     replaceCategoryFilters(newSearch, newState);
   }, [search, tagOptions, entries, state, replaceCategoryFilters, defaultEntries]);
 
+  const onSubmitEntryValue = useCallback((value: TagValue) => {
+    const found = entries.findIndex(i => i.id === value.key);
+
+    if (found !== -1) {
+      onSubmitValues([value]);
+      return;
+    }
+
+    const newEntries = [...entries, { id: value.key }];
+
+    const [newSearch, newState] = updateSearchFilterTags(
+      tagOptions,
+      search,
+      defaultEntries,
+      [value],
+      newEntries,
+      (state ?? {})
+    );
+
+    replaceCategoryFilters(newSearch, newState);
+    setTimeout(() => setEntries(newEntries), 1);
+  }, [search, tagOptions, entries, state, replaceCategoryFilters, onSubmitValues, defaultEntries]);
+
   return {
     tagOptions,
     tagValues,
@@ -111,6 +135,7 @@ export const useTagFilters = ({
     entries,
     queryParams,
     onAddOptions,
+    onSubmitEntryValue,
     onSubmitValues,
     onAddEntry,
     onDeleteEntry,

@@ -1,7 +1,7 @@
 import { Paper, Stack } from '@mui/material';
 import { CatalogFilters, CatalogTableRow } from '@components/catalog';
 import { accessRecordTagsOptions } from '@constants';
-import { useControls, useDebounce, useOrder, useQuerySync, useQueryValues, useSimpleContextMenu, useTagFilters } from '@hooks';
+import { useControls, useDebounce, useNotification, useOrder, useQuerySync, useQueryValues, useSimpleContextMenu, useTagFilters } from '@hooks';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { Client } from '@enums';
@@ -14,7 +14,6 @@ import { AccessRecordContextMenu } from '@components/common';
 import { useSetAtom } from 'jotai';
 import { loadingAtom } from '@atoms';
 import { useNavigate } from 'react-router';
-import { createSearchParams } from '@utils/queryUtils';
 
 const sx = createSx({
   container: {
@@ -36,6 +35,7 @@ export const CatalogView = () => {
   const updated = useRef(false);
   const contextMenu = useSimpleContextMenu<AccessRecord>();
   const navigate = useNavigate();
+  const { createNotification } = useNotification();
   useQuerySync({ search: debouncedSearch });
 
   const tags = useTagFilters({
@@ -73,10 +73,11 @@ export const CatalogView = () => {
 
     try {
       await accessApi.updateIpClassification(set);
+      createNotification('Successfully updated classification', 'success');
       response.refetch();
     }
     catch (e) {
-      console.error(e);
+      createNotification('Failed to update classification', 'error');
     }
 
     setLoading(false);
@@ -144,7 +145,7 @@ export const CatalogView = () => {
         contextMenu={contextMenu.menu}
         onClose={contextMenu.onClose}
         onClassify={onClassify}
-        onFilter={({ ip }) => navigate(`/catalog?${createSearchParams([{ ip }])}`)}
+        onFilter={({ ip }) => tags.onSubmitEntryValue({ key: 'ip', value: ip })}
         onView={(set) => navigate(`/catalog/${set.ip}`)}
       />
     </Stack>

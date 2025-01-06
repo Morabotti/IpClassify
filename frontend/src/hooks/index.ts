@@ -11,3 +11,4 @@ export * from './useOrder';
 export * from './useLogin';
 export * from './useDebounce';
 export * from './useTagFilters';
+export * from './useNotification';

@@ -1,6 +1,7 @@
 import { Dayjs } from 'dayjs';
 
 export type TableAlign = 'inherit' | 'left' | 'center' | 'right' | 'justify';
+export type NotificationType = 'success' | 'error' | 'info' | 'warning';
 export type TagFilterType = 'string' | 'number' | 'date' | 'boolean' | 'date-range' | 'option' | 'auto-complete';
 
 export interface ContextMenu {
@@ -98,4 +99,11 @@ export interface TagFilterOption {
 
 export interface TagEntry {
   id: string | null;
+  hidden?: boolean;
+}
+
+export interface NotificationSettings {
+  maxNotifications: number;
+  autoHideDuration: number | null;
+  preventDuplicate: boolean;
 }
