@@ -45,9 +45,18 @@ Left bar is to show summarized data. These summarization also work as a filterin
 ## Catalog
 Catalog is a fully powered access record history tool. This view enables advanced search queries based on access records.
 
-**TODO**
+![Catalog overview](./assets/ip_classify_catalog.png)
+
+User may define one or multiple filters with tags. Some filters eg. **application** or **country** have auto-completed values for most common search values. Tags will allow the user to search following types of data points:
+
+* Text / Number fields
+* Boolean fields
+* Date fields
+* Enum fields
 
 ## Details
-Details page is a basic view for showing information about the IP
+IP details page shows all of the relevant information about given IP. Details page will also allow user to define ip classification and analyze specific client behavior.
+
+![Details page](./assets/ip_classify_details.png)
 
 **TODO**
