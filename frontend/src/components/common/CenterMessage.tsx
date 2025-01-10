@@ -59,7 +59,7 @@ export const CenterMessage: React.FC<Props> = ({
         {onClick && (
           <Button
             variant='contained'
-            color='primary'
+            color='secondary'
             onClick={onClick}
             onMouseEnter={onMouseEnter}
             disableElevation

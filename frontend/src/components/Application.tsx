@@ -27,7 +27,7 @@ const Application = () => (
           >
             <Route index element={<HomeView />} />
             <Route path='catalog' element={<CatalogView />} />
-            <Route path='catalog/:id' element={<DetailsView />} />
+            <Route path='catalog/:ip' element={<DetailsView />} />
           </Route>
           <Route path='/login' element={<LoginView />} />
           <Route path='*' element={<CenterMessage icon={DoNotDisturb} text='PAGE NOT FOUND' title='404' />} />

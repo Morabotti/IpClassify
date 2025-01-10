@@ -1,10 +1,16 @@
 import { TrafficLevel } from '@enums';
-import { AccessRecord, AccessRecordQuery, CommonQuery, DateQuery, TagOption } from '@types';
+import { AccessRecord, AccessRecordQuery, CommonQuery, DateQuery, IpClassification, TagOption } from '@types';
 import { safeParseNumber } from './queryUtils';
 
 export const getTrafficLevel = (record: AccessRecord): TrafficLevel => {
   if (record.danger) return TrafficLevel.DANGER;
   if (record.warning) return TrafficLevel.WARNING;
+  return TrafficLevel.NORMAL;
+};
+
+export const getIpClassificationLevel = (record: IpClassification): TrafficLevel => {
+  if (record.isDanger) return TrafficLevel.DANGER;
+  if (record.isWarning) return TrafficLevel.WARNING;
   return TrafficLevel.NORMAL;
 };
 

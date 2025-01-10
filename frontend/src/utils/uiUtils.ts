@@ -19,3 +19,9 @@ export const getTextColor = (level: TrafficLevel): TypographyOwnProps['color'] =
     default: return 'textPrimary';
   }
 };
+
+export const isValidIp = (str: string): boolean => {
+  const octet = '(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]?|0)';
+  const regex = new RegExp(`^${octet}\\.${octet}\\.${octet}\\.${octet}$`);
+  return regex.test(str);
+};

@@ -9,6 +9,7 @@ import { DateRange, Tag } from '@mui/icons-material';
 import { trafficLevels } from '@constants';
 import { TrafficLevel } from '@enums';
 import { useNavigate } from 'react-router';
+import { createSearchParams } from '@utils/queryUtils';
 
 const sx = createSx({
   list: {
@@ -97,7 +98,7 @@ export const AggregationSummaryList = () => {
         aggregation={{ field: 'country', count: 5 }}
         common={commonQuery}
         date={dateQuery}
-        onClick={data => console.log(data)}
+        onClick={data => navigate(`/catalog?${createSearchParams([{ country: data.label }])}`)}
         label='Most common countries'
         errorMessage='Unable to fetch most common countries'
         emptyMessage='No countries found within given filters.'
@@ -106,7 +107,7 @@ export const AggregationSummaryList = () => {
         aggregation={{ field: 'application', count: 5 }}
         common={commonQuery}
         date={dateQuery}
-        onClick={data => console.log(data)}
+        onClick={data => navigate(`/catalog?${createSearchParams([{ application: data.label }])}`)}
         label='Most common application'
         errorMessage='Unable to fetch most common application'
         emptyMessage='No application found within given filters.'
